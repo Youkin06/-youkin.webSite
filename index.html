@@ -224,7 +224,7 @@
                     "// 이벤트: 존재 왜곡 현상 발생 (초기 기록)",
                     "// 행동: 정보 스트림 수집 시작 (단계 1)",
                     "// 경고: 시공간 흐름 이상 감지 (상태: 진행 중)",
-                    "/* 로그: 시간 전이 관측 (날짜: 20XX년 3분기) */",
+                    "/* 로그: 시간 전이 관측 (날짜: 20XX年 3분기) */",
                     "// 프로젝트: 자기 참조 매트릭스 구축 (상태: 87% 완료)",
                     "// 참고: 외부 개체 모니터링 프로세스 (우선순위: 높음)",
                     "/* 현재 상태: 시스템 안정성 저하, 침입 가능성 있음 */"
@@ -486,7 +486,7 @@
             if (typedTextSpan) {
                 typedTextSpan.textContent = hiddenInput.value;
             }
-            // スクロールは行わない (ユーザーが手動でスクロール)
+            // ここではスクロールは**しない** (ユーザーが手動でスクロールした位置を維持)
         });
 
         // Enterキーが押されたときの処理 (PC/スマホ共通)
@@ -501,6 +501,7 @@
                 const fullCommand = hiddenInput.value.trim(); // 入力されたコマンド全体
                 processCommand(fullCommand);
                 hiddenInput.value = ''; // 入力フィールドをクリア
+                // コマンド実行後に一番下へスクロール
                 scrollToBottom(); 
             }
         });
@@ -545,7 +546,8 @@
                 outputLines = []; // 画面クリア
                 // クリア後の初期メッセージを再表示 (現在の言語で)
                 outputLines.push(languageInitialMessages[currentLanguage]);
-                scrollToBottom(); // clearした場合は一番上から始まるのでスクロール
+                // clearした場合は一番上から始まるので、ここでscrollToBottomを呼び出す
+                scrollToBottom(); 
             } else if (actualCommand === 'exit') {
                 isExiting = true; // 終了処理中フラグを立てる
                 outputLines.push(`<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`);
@@ -560,11 +562,31 @@
 
         // ターミナル表示の更新
         function updateTerminalDisplay() {
+            // 現在のスクロール位置を保存
+            const scrollTop = terminal.scrollTop;
+            const scrollHeight = terminal.scrollHeight;
+            const clientHeight = terminal.clientHeight;
+            const isScrolledToBottom = (scrollHeight - scrollTop - clientHeight < 1); // ほぼ一番下にいるか判定
+
             // これまでの履歴と現在の入力行を結合して表示
             outputDiv.innerHTML = outputLines.join('<br>') + `<br><span class="prompt">> </span><span id="typed-text"></span><span class="cursor"></span>`;
             
             // typedTextSpanを再取得 (DOMが更新されたため、常に最新の要素に紐づける)
             typedTextSpan = document.getElementById('typed-text'); 
+            
+            // ユーザーが手動でスクロールした位置を維持するか、一番下にいる場合は自動スクロールする
+            if (!isExiting && !languageSelectionMode && !isScrolledToBottom) {
+                 // 終了処理中ではなく、言語選択モードでもなく、かつ一番下ではない場合
+                 // スクロール位置を維持する (ただし、入力によるスクロールはさせない)
+                 // この時点では、DOM更新によって一時的にスクロール位置がリセットされる可能性があるため、
+                 // 次のフレームでスクロール位置を復元する
+                 requestAnimationFrame(() => {
+                     terminal.scrollTop = scrollTop;
+                 });
+            } else if (isScrolledToBottom || isExiting || languageSelectionMode) {
+                 // もともと一番下にいた場合、または終了・言語選択モードの場合は、一番下にスクロール
+                 scrollToBottom();
+            }
         }
 
         // 自動スクロール
