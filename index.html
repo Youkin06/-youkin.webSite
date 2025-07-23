@@ -96,14 +96,12 @@
         /* キーボード入力を見せないための隠し入力フィールド */
         .hidden-input {
             position: absolute;
-            /* 画面外に配置し、透明にする */
             width: 1px;
             height: 1px;
             top: -9999px;
             left: -9999px;
             opacity: 0;
-            /* pointer-events: none; は維持 */
-            pointer-events: none; /* これがないとスマホでキーボードが出てこない場合がある */
+            pointer-events: none; /* フォーカスを当てるために必要、clickイベントで対応 */
         }
 
         /* 奇妙なグリッチエフェクト（エラー風アニメーション） */
@@ -178,20 +176,70 @@
     <script>
         // 後で編集する情報
         const personalData = {
-            name: "YOHEI YAOI", // ここにあなたの名前を追加
-            age: "19",       // ここにあなたの年齢を追加
-            timeline: [
-                "/* 2006 6/7 Yohei Yaoi was borned */",
-                "// EVENT: EXISTENCE_MANIFESTATION_AT_COORDINATES [X.Y.Z]",
-                "// ACTION: DATA_STREAM_COLLECTION_INITIATED (PHASE_1)",
-                "// ALERT: ANOMALY_DETECTED_IN_TIME_FLOW (STATUS: ONGOING)",
-                "/* LOG: TEMPORAL_SHIFT_OBSERVED (DATE: 20XX_Q3) */",
-                "// PROJECT: SELF_REFERENCE_MATRIX_CONSTRUCTION (STATUS: 87% COMPLETE)",
-                "// NOTE: EXTERNAL_ENTITIES_MONITORING_PROCESS (HIGH_PRIORITY)",
-                "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"
-                // ここに年表（出来事）をプログラミング風のコメントで追加できます
-                // 例: "// NEW_DATA: UNEXPECTED_SIGNAL_RECEIVED_FROM_SECTOR_7 (20YY)"
-            ]
+            name: {
+                ja: "八百井 陽平",
+                en: "Yohei Yaoi",
+                zh: "八百井 陽平 (Yāobǎi Yángpíng)",
+                ko: "야오이 요헤이 (Yaoi Yohei)"
+            },
+            age: {
+                ja: "19歳 (システム年齢: 0x13)",
+                en: "19 years old (System Age: 0x13)",
+                zh: "19岁 (系统年龄: 0x13)",
+                ko: "19세 (시스템 연령: 0x13)"
+            },
+            timeline: {
+                ja: [
+                    "/* 2006年6月7日: 八百井 陽平、この次元に誕生 */",
+                    "// 事象: 存在の歪曲事象発生 (初期記録)",
+                    "// 行動: 情報ストリーム収集開始 (フェーズ1)",
+                    "// 警告: 時空間フロー異常検出 (ステータス: 継続中)",
+                    "/* ログ: 時空転移観測 (日付: 20XX年第3四半期) */",
+                    "// プロジェクト: 自己参照マトリクス構築 (ステータス: 87%完了)",
+                    "// 注記: 外部存在による監視プロセス (優先度: 高)",
+                    "/* 現在のステータス: システム安定性低下、侵入の可能性あり */"
+                ],
+                en: [
+                    "/* 2006 June 7: Yohei Yaoi was born into this dimension */",
+                    "// EVENT: EXISTENCE_MANIFESTATION_OCCURRED (INITIAL_LOG)",
+                    "// ACTION: DATA_STREAM_COLLECTION_INITIATED (PHASE_1)",
+                    "// ALERT: ANOMALY_DETECTED_IN_TIME_FLOW (STATUS: ONGOING)",
+                    "/* LOG: TEMPORAL_SHIFT_OBSERVED (DATE: 20XX_Q3) */",
+                    "// PROJECT: SELF_REFERENCE_MATRIX_CONSTRUCTION (STATUS: 87% COMPLETE)",
+                    "// NOTE: EXTERNAL_ENTITIES_MONITORING_PROCESS (HIGH_PRIORITY)",
+                    "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"
+                ],
+                zh: [
+                    "/* 2006年6月7日: 八百井阳平降生于此维度 */",
+                    "// 事件: 存在扭曲事件发生 (初始记录)",
+                    "// 行动: 信息流收集启动 (阶段1)",
+                    "// 警告: 时空流异常检测 (状态: 进行中)",
+                    "/* 日志: 时间转移观测 (日期: 20XX年第三季度) */",
+                    "// 项目: 自我参照矩阵构建 (状态: 完成87%)",
+                    "// 注意: 外部实体监控过程 (优先级: 高)",
+                    "/* 当前状态: 系统稳定但已受损 */"
+                ],
+                ko: [
+                    "/* 2006년 6월 7일: 야오이 요헤이, 이 차원에 탄생 */",
+                    "// 이벤트: 존재 왜곡 현상 발생 (초기 기록)",
+                    "// 행동: 정보 스트림 수집 시작 (단계 1)",
+                    "// 경고: 시공간 흐름 이상 감지 (상태: 진행 중)",
+                    "/* 로그: 시간 전이 관측 (날짜: 20XX년 3분기) */",
+                    "// 프로젝트: 자기 참조 매트릭스 구축 (상태: 87% 완료)",
+                    "// 참고: 외부 개체 모니터링 프로세스 (우선순위: 높음)",
+                    "/* 현재 상태: 시스템 안정성 저하, 침입 가능성 있음 */"
+                ]
+            },
+            game: {
+                title: "謎の空間探査ゲーム「クロノス・パス」", // あなたのゲームタイトル
+                link: "https://example.com/your-game" // あなたのゲームのリンク
+            },
+            profile: {
+                ja: "私は、コードとアートの境界を探求する観察者です。未知のシステムを解析し、次元間のデータを収集しています。特に、複雑なロジックと奇妙なインターフェースの構築に情熱を注いでいます。",
+                en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces.",
+                zh: "我是一个探索代码与艺术边界的观察者。我分析未知系统，并收集维度间的数据。我对构建复杂的逻辑和奇特的界面充满热情。",
+                ko: "저는 코드와 예술의 경계를 탐구하는 관찰자입니다. 미지의 시스템을 분석하고 차원 간 데이터를 수집합니다. 특히 복잡한 논리와 기묘한 인터페이스 구축에 열정적입니다."
+            }
         };
 
         const terminal = document.getElementById('terminal');
@@ -199,35 +247,215 @@
         let typedTextSpan = document.getElementById('typed-text');
         const hiddenInput = document.getElementById('hiddenInput');
         let outputLines = [];
+        
+        let currentLanguage = 'ja'; // 現在の表示言語 (ja, en, zh, ko)
 
-        // 入力に応じた情報とコマンド
+        // コマンドとそれに対応する出力定義 (言語対応)
         const commands = {
-            'help': `
-            <span class="comment">// Available Commands:</span>
-            <span class="highlight">name</span>     - Display user name.
-            <span class="highlight">age</span>      - Display user age.
-            <span class="highlight">timeline</span> - Show chronological events.
-            <span class="highlight">clear</span>    - Clear terminal screen.
-            <span class="highlight">exit</span>     - Close session (reload page).
-            `,
-            'name': `
-            <span class="comment">// Retrieving NAME data...</span>
-            <span class="glitch">Accessing_Database_0x01...</span>
-            <span class="output">NAME_FIELD: '${personalData.name}'</span>
-            <span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>
-            `,
-            'age': `
-            <span class="comment">// Querying AGE_MODULE...</span>
-            <span class="glitch">Processing_Temporal_Calculations...</span>
-            <span class="output">AGE_FIELD: '${personalData.age}'</span>
-            <span class="error-line">WARNING: TEMPORAL_ANOMALY_DETECTED (SEVERITY: MODERATE)</span>
-            `,
-            'timeline': `
-            <span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>
-            <span class="glitch">Decoding_Encrypted_Fragments...</span>
-            ${personalData.timeline.map(item => `<span class="output">${item}</span>`).join('\n')}
-            <span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>
-            `
+            'help': {
+                ja: `
+                <span class="comment">// 利用可能なコマンド:</span>
+                <span class="highlight">help</span>     - コマンドリストを表示
+                <span class="highlight">名前</span>     - ユーザー名を表示
+                <span class="highlight">年齢</span>     - ユーザー年齢を表示
+                <span class="highlight">年表</span>     - 時系列イベントを表示
+                <span class="highlight">ゲーム</span>     - 作成ゲームの情報を表示
+                <span class="highlight">プロファイル</span> - 自己紹介を表示
+                <span class="highlight">言語</span>     - 言語設定を変更 (例: 言語 en)
+                <span class="highlight">クリア</span>   - ターミナル画面をクリア
+                <span class="highlight">終了</span>     - セッションを終了
+                `,
+                en: `
+                <span class="comment">// Available Commands:</span>
+                <span class="highlight">help</span>     - Display command list
+                <span class="highlight">name</span>     - Display user name
+                <span class="highlight">age</span>      - Display user age
+                <span class="highlight">timeline</span> - Show chronological events
+                <span class="highlight">game</span>     - Show info about created games
+                <span class="highlight">profile</span>  - Show personal profile
+                <span class="highlight">language</span> - Change language (e.g., language en)
+                <span class="highlight">clear</span>    - Clear terminal screen
+                <span class="highlight">exit</span>     - Close session
+                `,
+                zh: `
+                <span class="comment">// 可用命令:</span>
+                <span class="highlight">help</span>     - 显示命令列表
+                <span class="highlight">名字</span>     - 显示用户名
+                <span class="highlight">年龄</span>     - 显示用户年龄
+                <span class="highlight">年表</span>     - 显示时间线事件
+                <span class="highlight">游戏</span>     - 显示所创建游戏信息
+                <span class="highlight">简介</span>     - 显示个人简介
+                <span class="highlight">语言</span>     - 更改语言 (例如: 语言 en)
+                <span class="highlight">清除</span>     - 清除终端屏幕
+                <span class="highlight">退出</span>     - 关闭会话
+                `,
+                ko: `
+                <span class="comment">// 사용 가능한 명령:</span>
+                <span class="highlight">help</span>     - 명령 목록 표시
+                <span class="highlight">이름</span>     - 사용자 이름 표시
+                <span class="highlight">나이</span>     - 사용자 나이 표시
+                <span class="highlight">연대표</span>    - 시간순 이벤트 표시
+                <span class="highlight">게임</span>     - 제작 게임 정보 표시
+                <span class="highlight">프로필</span>   - 자기소개 표시
+                <span class="highlight">언어</span>     - 언어 설정 변경 (예: 언어 en)
+                <span class="highlight">지우기</span>   - 터미널 화면 지우기
+                <span class="highlight">종료</span>     - 세션 종료
+                `
+            },
+            'name': {
+                ja: `
+                <span class="comment">// 名前データを取得中...</span>
+                <span class="glitch">データベース0x01にアクセス中...</span>
+                <span class="output">名前フィールド: '${personalData.name.ja}'</span>
+                <span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>
+                `,
+                en: `
+                <span class="comment">// Retrieving NAME data...</span>
+                <span class="glitch">Accessing_Database_0x01...</span>
+                <span class="output">NAME_FIELD: '${personalData.name.en}'</span>
+                <span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>
+                `,
+                zh: `
+                <span class="comment">// 正在检索名称数据...</span>
+                <span class="glitch">正在访问数据库0x01...</span>
+                <span class="output">名称字段: '${personalData.name.zh}'</span>
+                <span class="error-line">错误: 数据完整性检查失败 (代码: 0xDEADBEEF)</span>
+                `,
+                ko: `
+                <span class="comment">// 이름 데이터 검색 중...</span>
+                <span class="glitch">데이터베이스 0x01에 접근 중...</span>
+                <span class="output">이름 필드: '${personalData.name.ko}'</span>
+                <span class="error-line">오류: 데이터 무결성 검사 실패 (코드: 0xDEADBEEF)</span>
+                `
+            },
+            'age': {
+                ja: `
+                <span class="comment">// 年齢モジュールを照会中...</span>
+                <span class="glitch">時間計算処理中...</span>
+                <span class="output">年齢フィールド: '${personalData.age.ja}'</span>
+                <span class="error-line">警告: 時空異常検出 (深刻度: 中)</span>
+                `,
+                en: `
+                <span class="comment">// Querying AGE_MODULE...</span>
+                <span class="glitch">Processing_Temporal_Calculations...</span>
+                <span class="output">AGE_FIELD: '${personalData.age.en}'</span>
+                <span class="error-line">WARNING: TEMPORAL_ANOMALY_DETECTED (SEVERITY: MODERATE)</span>
+                `,
+                zh: `
+                <span class="comment">// 正在查询年龄模块...</span>
+                <span class="glitch">正在处理时间计算...</span>
+                <span class="output">年龄字段: '${personalData.age.zh}'</span>
+                <span class="error-line">警告: 检测到时间异常 (严重性: 中)</span>
+                `,
+                ko: `
+                <span class="comment">// 연령 모듈 조회 중...</span>
+                <span class="glitch">시간 계산 처리 중...</span>
+                <span class="output">연령 필드: '${personalData.age.ko}'</span>
+                <span class="error-line">경고: 시간 이상 감지됨 (심각도: 중간)</span>
+                `
+            },
+            'timeline': {
+                ja: `
+                <span class="comment">// 時系列ログを取得中...</span>
+                <span class="glitch">暗号化されたフラグメントを復号中...</span>
+                ${personalData.timeline.ja.map(item => `<span class="output">${item}</span>`).join('\n')}
+                <span class="error-line">致命的エラー: ログフラグメントが見つかりません (ID: F9F9F9)</span>
+                `,
+                en: `
+                <span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>
+                <span class="glitch">Decoding_Encrypted_Fragments...</span>
+                ${personalData.timeline.en.map(item => `<span class="output">${item}</span>`).join('\n')}
+                <span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>
+                `,
+                zh: `
+                <span class="comment">// 正在获取时间顺序日志...</span>
+                <span class="glitch">正在解码加密片段...</span>
+                ${personalData.timeline.zh.map(item => `<span class="output">${item}</span>`).join('\n')}
+                <span class="error-line">严重错误: 缺少日志片段 (ID: F9F9F9)</span>
+                `,
+                ko: `
+                <span class="comment">// 연대기 로그 가져오는 중...</span>
+                <span class="glitch">암호화된 조각 해독 중...</span>
+                ${personalData.timeline.ko.map(item => `<span class="output">${item}</span>`).join('\n')}
+                <span class="error-line">치명적 오류: 로그 조각 누락 (ID: F9F9F9)</span>
+                `
+            },
+            'game': {
+                ja: `
+                <span class="comment">// ゲーム情報を取得中...</span>
+                <span class="glitch">メタデータを解析中...</span>
+                <span class="output">タイトル: '${personalData.game.title}'</span>
+                <span class="output">リンク: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
+                <span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>
+                `,
+                en: `
+                <span class="comment">// Retrieving GAME data...</span>
+                <span class="glitch">Parsing_Metadata...</span>
+                <span class="output">TITLE: '${personalData.game.title}'</span>
+                <span class="output">LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
+                <span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>
+                `,
+                zh: `
+                <span class="comment">// 正在检索游戏数据...</span>
+                <span class="glitch">正在解析元数据...</span>
+                <span class="output">标题: '${personalData.game.title}'</span>
+                <span class="output">链接: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
+                <span class="error-line">警告: 连接到外部链接 (推荐度: 低)</span>
+                `,
+                ko: `
+                <span class="comment">// 게임 데이터 검색 중...</span>
+                <span class="glitch">메타데이터 분석 중...</span>
+                <span class="output">제목: '${personalData.game.title}'</span>
+                <span class="output">링크: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
+                <span class="error-line">경고: 외부 링크 연결 (권장: 낮음)</span>
+                `
+            },
+            'profile': {
+                ja: `
+                <span class="comment">// プロファイル情報を取得中...</span>
+                <span class="glitch">個人データキャッシュをスキャン中...</span>
+                <span class="output">${personalData.profile.ja}</span>
+                <span class="error-line">エラー: 認証レベル不足 (CODE: 401)</span>
+                `,
+                en: `
+                <span class="comment">// Retrieving PROFILE data...</span>
+                <span class="glitch">Scanning_Personal_Data_Cache...</span>
+                <span class="output">${personalData.profile.en}</span>
+                <span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>
+                `,
+                zh: `
+                <span class="comment">// 正在检索个人资料数据...</span>
+                <span class="glitch">正在扫描个人数据缓存...</span>
+                <span class="output">${personalData.profile.zh}</span>
+                <span class="error-line">错误: 认证级别不足 (代码: 401)</span>
+                `,
+                ko: `
+                <span class="comment">// 프로필 데이터 검색 중...</span>
+                <span class="glitch">개인 데이터 캐시 스캔 중...</span>
+                <span class="output">${personalData.profile.ko}</span>
+                <span class="error-line">오류: 인증 레벨 부족 (코드: 401)</span>
+                `
+            },
+            'clear': {
+                ja: null, en: null, zh: null, ko: null // clearは特別な処理なので出力は不要
+            },
+            'exit': {
+                ja: null, en: null, zh: null, ko: null // exitは特別な処理なので出力は不要
+            }
+        };
+
+        const currentCommands = { // 現在の言語で利用可能なコマンドのエイリアス
+            'ja': { 'help': 'help', '名前': 'name', '年齢': 'age', '年表': 'timeline', 'ゲーム': 'game', 'プロファイル': 'profile', '言語': 'language', 'クリア': 'clear', '終了': 'exit' },
+            'en': { 'help': 'help', 'name': 'name', 'age': 'age', 'timeline': 'timeline', 'game': 'game', 'profile': 'profile', 'language': 'language', 'clear': 'clear', 'exit': 'exit' },
+            'zh': { 'help': 'help', '名字': 'name', '年龄': 'age', '年表': 'timeline', '游戏': 'game', '简介': 'profile', '语言': 'language', '清除': 'clear', '退出': 'exit' },
+            'ko': { 'help': 'help', '이름': 'name', '나이': 'age', '연대표': 'timeline', '게임': 'game', '프로필': 'profile', '언어': 'language', '지우기': 'clear', '종료': 'exit' }
+        };
+
+        const languageInitialMessages = {
+            ja: `ACCESS GRANTED.<br>WELCOME, USER. 'help'と入力してください。`,
+            en: `ACCESS GRANTED.<br>WELCOME, USER. TYPE 'help' FOR COMMAND LIST.`,
+            zh: `ACCESS GRANTED.<br>欢迎, 用户. 输入 'help' 查看命令列表.`,
+            ko: `ACCESS GRANTED.<br>환영합니다, 사용자. 'help'를 입력하여 명령 목록을 확인하세요.`
         };
 
         // 初期フォーカス設定
@@ -246,33 +474,49 @@
         hiddenInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault(); // デフォルトの改行動作を防ぐ
-                const command = hiddenInput.value.trim(); // 入力されたコマンドを取得
-                processCommand(command);
+                const fullCommand = hiddenInput.value.trim(); // 入力されたコマンド全体
+                processCommand(fullCommand);
                 hiddenInput.value = ''; // 入力フィールドをクリア
                 scrollToBottom();
             }
-            // スマホでの予測変換などによる文字入力に対応するため、Backspace以外はhiddenInput.valueで処理
-            // 今回のhiddenInput.addEventListener('input')でリアルタイム表示しているのでkeydownの個別の文字処理は不要
         });
 
         // コマンド処理
-        function processCommand(command) {
-            outputLines.push(`<span class="prompt">> ${command}</span>`); // 実行されたコマンドを履歴に追加
-            let output = commands[command.toLowerCase()];
+        function processCommand(fullCommand) {
+            outputLines.push(`<span class="prompt">> ${fullCommand}</span>`); // 実行されたコマンドを履歴に追加
 
-            if (output) {
-                outputLines.push(output);
+            const parts = fullCommand.split(' ');
+            const commandAlias = parts[0].toLowerCase(); // コマンドの最初の部分
+            const args = parts.slice(1); // それ以降の引数
+
+            const actualCommand = currentCommands[currentLanguage][commandAlias]; // エイリアスから実際のコマンド名を取得
+
+            if (actualCommand === 'language') {
+                const targetLang = args[0] ? args[0].toLowerCase() : '';
+                if (['ja', 'en', 'zh', 'ko'].includes(targetLang)) {
+                    currentLanguage = targetLang;
+                    outputLines.push(`<span class="comment">// 言語設定を '${targetLang}' に変更しました。</span>`);
+                    if (targetLang === 'en') outputLines.push(`<span class="comment">// Language set to '${targetLang}'.</span>`);
+                    if (targetLang === 'zh') outputLines.push(`<span class="comment">// 语言已设置为 '${targetLang}'.</span>`);
+                    if (targetLang === 'ko') outputLines.push(`<span class="comment">// 언어 설정이 '${targetLang}'으로 변경되었습니다.</span>`);
+
+                } else {
+                    outputLines.push(`<span class="error-line">エラー: 不明な言語 '${targetLang}'。利用可能: ja, en, zh, ko</span>`);
+                }
+            } else if (commands[actualCommand] && commands[actualCommand][currentLanguage]) {
+                // 通常のコマンド処理
+                outputLines.push(commands[actualCommand][currentLanguage]);
             } else {
-                outputLines.push(`<span class="error-line">ERROR: COMMAND NOT FOUND: '${command}'</span>`);
-                outputLines.push(`<span class="comment">// Type 'help' for available commands.</span>`);
+                // コマンドが見つからない場合
+                outputLines.push(`<span class="error-line">ERROR: COMMAND NOT FOUND: '${fullCommand}'</span>`);
+                outputLines.push(`<span class="comment">// 'help'と入力して利用可能なコマンドを確認してください。</span>`);
             }
 
-            if (command.toLowerCase() === 'clear') {
+            if (actualCommand === 'clear') {
                 outputLines = []; // 画面クリア
-                // クリア後の初期メッセージを再表示
-                outputLines.push(`<span class="prompt">ACCESS GRANTED.</span>`);
-                outputLines.push(`<span class="prompt">WELCOME, USER. TYPE 'help' FOR COMMAND LIST.</span>`);
-            } else if (command.toLowerCase() === 'exit') {
+                // クリア後の初期メッセージを再表示 (現在の言語で)
+                outputLines.push(languageInitialMessages[currentLanguage] || languageInitialMessages['ja']); // デフォルトは日本語
+            } else if (actualCommand === 'exit') {
                 outputLines.push(`<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`);
                 updateTerminalDisplay(); // 終了メッセージを表示
                 setTimeout(() => location.reload(), 2000); // 2秒後にページをリロードして終了
@@ -301,6 +545,9 @@
         // ページロード時に隠しinputにフォーカス
         window.addEventListener('load', () => {
             hiddenInput.focus();
+            // 初期メッセージをセット
+            outputLines.push(languageInitialMessages[currentLanguage]);
+            updateTerminalDisplay();
         });
 
         // どこをクリックしても隠しinputにフォーカス
