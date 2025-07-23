@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SYSTEM_ACCESS: PERSONAL_LOG</title>
     <style>
-
+        /* 全体のスタイル */
         body {
             margin: 0;
             overflow: hidden; /* スクロールバーを非表示に */
@@ -249,6 +249,7 @@
         let outputLines = [];
         
         let currentLanguage = 'ja'; // 現在の表示言語 (ja, en, zh, ko)
+        let languageSelectionMode = false; // 言語選択モードかどうかのフラグ
 
         // コマンドとそれに対応する出力定義 (言語対応)
         const commands = {
@@ -261,7 +262,7 @@
                 <span class="highlight">年表</span>     - 時系列イベントを表示
                 <span class="highlight">ゲーム</span>     - 作成ゲームの情報を表示
                 <span class="highlight">プロファイル</span> - 自己紹介を表示
-                <span class="highlight">言語</span>     - 言語設定を変更 (例: 言語 en)
+                <span class="highlight">言語</span>     - 言語設定を変更 (「言語」と入力後、言語コードを入力)
                 <span class="highlight">クリア</span>   - ターミナル画面をクリア
                 <span class="highlight">終了</span>     - セッションを終了
                 `,
@@ -273,7 +274,7 @@
                 <span class="highlight">timeline</span> - Show chronological events
                 <span class="highlight">game</span>     - Show info about created games
                 <span class="highlight">profile</span>  - Show personal profile
-                <span class="highlight">language</span> - Change language (e.g., language en)
+                <span class="highlight">language</span> - Change language (type 'language' then a language code)
                 <span class="highlight">clear</span>    - Clear terminal screen
                 <span class="highlight">exit</span>     - Close session
                 `,
@@ -285,7 +286,7 @@
                 <span class="highlight">年表</span>     - 显示时间线事件
                 <span class="highlight">游戏</span>     - 显示所创建游戏信息
                 <span class="highlight">简介</span>     - 显示个人简介
-                <span class="highlight">语言</span>     - 更改语言 (例如: 语言 en)
+                <span class="highlight">语言</span>     - 更改语言 (输入'语言'后, 输入语言代码)
                 <span class="highlight">清除</span>     - 清除终端屏幕
                 <span class="highlight">退出</span>     - 关闭会话
                 `,
@@ -297,7 +298,7 @@
                 <span class="highlight">연대표</span>    - 시간순 이벤트 표시
                 <span class="highlight">게임</span>     - 제작 게임 정보 표시
                 <span class="highlight">프로필</span>   - 자기소개 표시
-                <span class="highlight">언어</span>     - 언어 설정 변경 (예: 언어 en)
+                <span class="highlight">언어</span>     - 언어 설정 변경 ('언어' 입력 후 언어 코드 입력)
                 <span class="highlight">지우기</span>   - 터미널 화면 지우기
                 <span class="highlight">종료</span>     - 세션 종료
                 `
@@ -444,7 +445,7 @@
             }
         };
 
-        const currentCommands = { // 現在の言語で利用可能なコマンドのエイリアス
+        const commandAliases = { // 現在の言語で利用可能なコマンドのエイリアス
             'ja': { 'help': 'help', '名前': 'name', '年齢': 'age', '年表': 'timeline', 'ゲーム': 'game', 'プロファイル': 'profile', '言語': 'language', 'クリア': 'clear', '終了': 'exit' },
             'en': { 'help': 'help', 'name': 'name', 'age': 'age', 'timeline': 'timeline', 'game': 'game', 'profile': 'profile', 'language': 'language', 'clear': 'clear', 'exit': 'exit' },
             'zh': { 'help': 'help', '名字': 'name', '年龄': 'age', '年表': 'timeline', '游戏': 'game', '简介': 'profile', '语言': 'language', '清除': 'clear', '退出': 'exit' },
@@ -458,6 +459,21 @@
             ko: `ACCESS GRANTED.<br>환영합니다, 사용자. 'help'를 입력하여 명령 목록을 확인하세요.`
         };
 
+        const languageSelectionMessages = {
+            ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`,
+            en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`,
+            zh: `请从以下命令中选择您想使用的语言: <span class="highlight">ja</span> (日语), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`,
+            ko: `다음 명령어 중에서 사용하고 싶은 언어를 선택하여 입력하십시오: <span class="highlight">ja</span> (일본어), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`
+        };
+
+        const languageErrorMessages = {
+            ja: `エラー: 不明な言語コマンドです。'ja', 'en', 'zh', 'ko' のいずれかを入力してください。`,
+            en: `ERROR: Unknown language command. Please enter 'ja', 'en', 'zh', or 'ko'.`,
+            zh: `错误: 未知语言命令。请输入 'ja', 'en', 'zh' 或 'ko'。`,
+            ko: `오류: 알 수 없는 언어 명령어입니다. 'ja', 'en', 'zh', 또는 'ko' 중 하나를 입력하십시오.`
+        };
+
+
         // 初期フォーカス設定
         hiddenInput.focus();
 
@@ -467,7 +483,7 @@
             if (typedTextSpan) {
                 typedTextSpan.textContent = hiddenInput.value;
             }
-            scrollToBottom(); // 入力に合わせてスクロール
+            // スクロールは行わない (ユーザーが手動でスクロール)
         });
 
         // Enterキーが押されたときの処理 (PC/スマホ共通)
@@ -477,7 +493,8 @@
                 const fullCommand = hiddenInput.value.trim(); // 入力されたコマンド全体
                 processCommand(fullCommand);
                 hiddenInput.value = ''; // 入力フィールドをクリア
-                scrollToBottom();
+                // typedTextSpan.textContent は updateTerminalDisplay で新しい要素に置き換えられるため不要
+                scrollToBottom(); // コマンド実行後に一番下へスクロール
             }
         });
 
@@ -486,36 +503,40 @@
             outputLines.push(`<span class="prompt">> ${fullCommand}</span>`); // 実行されたコマンドを履歴に追加
 
             const parts = fullCommand.split(' ');
-            const commandAlias = parts[0].toLowerCase(); // コマンドの最初の部分
-            const args = parts.slice(1); // それ以降の引数
+            let commandInput = parts[0].toLowerCase(); // 入力されたコマンドの最初の部分
 
-            const actualCommand = currentCommands[currentLanguage][commandAlias]; // エイリアスから実際のコマンド名を取得
-
-            if (actualCommand === 'language') {
-                const targetLang = args[0] ? args[0].toLowerCase() : '';
-                if (['ja', 'en', 'zh', 'ko'].includes(targetLang)) {
-                    currentLanguage = targetLang;
-                    outputLines.push(`<span class="comment">// 言語設定を '${targetLang}' に変更しました。</span>`);
-                    if (targetLang === 'en') outputLines.push(`<span class="comment">// Language set to '${targetLang}'.</span>`);
-                    if (targetLang === 'zh') outputLines.push(`<span class="comment">// 语言已设置为 '${targetLang}'.</span>`);
-                    if (targetLang === 'ko') outputLines.push(`<span class="comment">// 언어 설정이 '${targetLang}'으로 변경되었습니다.</span>`);
-
+            if (languageSelectionMode) {
+                // 言語選択モードの場合の処理
+                if (['ja', 'en', 'zh', 'ko'].includes(commandInput)) {
+                    currentLanguage = commandInput;
+                    languageSelectionMode = false; // モード終了
+                    outputLines.push(`<span class="comment">// 言語設定を '${commandInput}' に変更しました。</span>`);
+                    outputLines.push(`<span class="comment">// ${languageInitialMessages[currentLanguage].replace('<br>',' ')}</span>`); // 新しい言語でヒントを表示
                 } else {
-                    outputLines.push(`<span class="error-line">エラー: 不明な言語 '${targetLang}'。利用可能: ja, en, zh, ko</span>`);
+                    outputLines.push(`<span class="error-line">${languageErrorMessages[currentLanguage]}</span>`);
                 }
-            } else if (commands[actualCommand] && commands[actualCommand][currentLanguage]) {
-                // 通常のコマンド処理
-                outputLines.push(commands[actualCommand][currentLanguage]);
             } else {
-                // コマンドが見つからない場合
-                outputLines.push(`<span class="error-line">ERROR: COMMAND NOT FOUND: '${fullCommand}'</span>`);
-                outputLines.push(`<span class="comment">// 'help'と入力して利用可能なコマンドを確認してください。</span>`);
+                // 通常モードの場合の処理
+                const actualCommand = commandAliases[currentLanguage][commandInput]; // エイリアスから実際のコマンド名を取得
+
+                if (actualCommand === 'language') {
+                    languageSelectionMode = true; // 言語選択モードに入る
+                    outputLines.push(languageSelectionMessages[currentLanguage]);
+                } else if (commands[actualCommand] && commands[actualCommand][currentLanguage]) {
+                    // 通常のコマンド処理
+                    outputLines.push(commands[actualCommand][currentLanguage]);
+                } else {
+                    // コマンドが見つからない場合
+                    outputLines.push(`<span class="error-line">ERROR: COMMAND NOT FOUND: '${fullCommand}'</span>`);
+                    outputLines.push(`<span class="comment">// '${commandAliases[currentLanguage]['help']}'と入力して利用可能なコマンドを確認してください。</span>`);
+                }
             }
 
-            if (actualCommand === 'clear') {
+            if (actualCommand === 'clear') { // 'clear' コマンドが実行された場合
                 outputLines = []; // 画面クリア
                 // クリア後の初期メッセージを再表示 (現在の言語で)
-                outputLines.push(languageInitialMessages[currentLanguage] || languageInitialMessages['ja']); // デフォルトは日本語
+                outputLines.push(languageInitialMessages[currentLanguage]);
+                scrollToBottom(); // clearした場合は一番上から始まるのでスクロール
             } else if (actualCommand === 'exit') {
                 outputLines.push(`<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`);
                 updateTerminalDisplay(); // 終了メッセージを表示
@@ -534,7 +555,7 @@
             // typedTextSpanを再取得 (DOMが更新されたため、常に最新の要素に紐づける)
             typedTextSpan = document.getElementById('typed-text'); 
             
-            scrollToBottom();
+            // スクロールはここでのみ実行 (clear時とEnter時)
         }
 
         // 自動スクロール
@@ -548,6 +569,7 @@
             // 初期メッセージをセット
             outputLines.push(languageInitialMessages[currentLanguage]);
             updateTerminalDisplay();
+            scrollToBottom(); // 初期表示時もスクロール
         });
 
         // どこをクリックしても隠しinputにフォーカス
