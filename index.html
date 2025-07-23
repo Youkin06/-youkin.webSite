@@ -102,19 +102,14 @@
         .highlight { color: #ffff00; }
         .comment { color: #888; }
 
-        /* ★★★ 修正点 ★★★ */
         /* --- スマートフォン向けの表示調整 --- */
         @media (max-width: 768px) {
             body {
-                /* フルスクリーン表示にするため、中央揃えを解除 */
                 display: block;
             }
             .terminal-container {
                 width: 100%;
                 max-width: 100%;
-                /* dvhはDynamic Viewport Heightの略。
-                  キーボード表示時など、表示領域のサイズが変わると高さが自動で追従する。
-                */
                 height: 100dvh;
                 border: none;
                 box-shadow: none;
@@ -236,14 +231,19 @@ LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;"
         
         // --- メインロジック ---
 
+        // ★★★ 修正点 ★★★
+        // 古い行を削除するロジックを独立した関数に
+        function trimOldLines() {
+            while (outputDiv.scrollHeight > terminal.clientHeight && outputDiv.children.length > 0) {
+                outputDiv.removeChild(outputDiv.firstElementChild);
+            }
+        }
+
         function addLine(htmlContent) {
             const line = document.createElement('div');
             line.innerHTML = htmlContent;
             outputDiv.appendChild(line);
-
-            while (outputDiv.scrollHeight > terminal.clientHeight && outputDiv.children.length > 0) {
-                outputDiv.removeChild(outputDiv.firstElementChild);
-            }
+            trimOldLines(); // 新しい行を追加するたびに、はみ出た行を削除
         }
 
         function promptManager() {
@@ -375,6 +375,13 @@ LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;"
                 hiddenInput.focus();
             }
         });
+        
+        // ★★★ 修正点 ★★★
+        // visualViewport APIを使い、キーボード表示などで画面サイズが変わったことを検知
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', trimOldLines);
+        }
+
 
         // 初期表示
         addLine("SYSTEM BOOT COMPLETE. TYPE 'help' FOR COMMANDS.");
