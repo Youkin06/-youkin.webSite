@@ -50,20 +50,15 @@
             overflow: hidden;
             position: relative;
             z-index: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
         }
 
-        #output {
-            width: 100%;
-        }
-
-        #output > div {
+        /* ★★★ 修正点 ★★★ */
+        /* 正しいコンテナID(#output-container)に対してスタイルを適用 */
+        #output-container > div {
             white-space: pre-wrap;
             word-wrap: break-word;
         }
-
+        
         .prompt, .typed-text {
             color: #00ff00;
         }
@@ -92,7 +87,7 @@
             pointer-events: none;
         }
         
-        /* --- エフェクト用スタイル --- */
+        /* エフェクト用スタイル */
         .glitch { animation: textGlitch 0.3s infinite alternate; }
         @keyframes textGlitch {
             0% { text-shadow: 0 0 1px #00ff00, 1px -1px 0px #ff00ff; }
@@ -102,11 +97,8 @@
         .highlight { color: #ffff00; }
         .comment { color: #888; }
 
-        /* --- スマートフォン向けの表示調整 --- */
         @media (max-width: 768px) {
-            body {
-                display: block;
-            }
+            body { display: block; }
             .terminal-container {
                 width: 100%;
                 max-width: 100%;
@@ -121,13 +113,15 @@
 <body>
     <div class="background-grid"></div>
     <div class="terminal-container" id="terminal">
-        <div id="output"></div>
+        <div id="prompt-container"></div>
+        <div id="output-container"></div>
     </div>
     <input type="text" class="hidden-input" id="hiddenInput" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
     <script>
         const terminal = document.getElementById('terminal');
-        const outputDiv = document.getElementById('output');
+        const promptContainer = document.getElementById('prompt-container');
+        const outputContainer = document.getElementById('output-container');
         const hiddenInput = document.getElementById('hiddenInput');
 
         let commandHistory = [];
@@ -180,149 +174,77 @@
 <span class="highlight">clear</span>    - Clear the screen
 <span class="highlight">exit</span>     - Close the session`
             },
-            'name': {
-                ja: `<span class="comment">// 名前データを取得中...</span>
-<span class="glitch">データベース0x01にアクセス中...</span>
-名前フィールド: '${personalData.name.ja}'
-<span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>`,
-                en: `<span class="comment">// Retrieving NAME data...</span>
-<span class="glitch">Accessing_Database_0x01...</span>
-NAME_FIELD: '${personalData.name.en}'
-<span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>`
-            },
-            'profile': {
-                ja: `<span class="comment">// プロファイル情報を取得中...</span>
-<span class="glitch">個人データキャッシュをスキャン中...</span>
-${personalData.profile.ja}
-<span class="error-line">エラー: 認証レベル不足 (CODE: 401)</span>`,
-                en: `<span class="comment">// Retrieving PROFILE data...</span>
-<span class="glitch">Scanning_Personal_Data_Cache...</span>
-${personalData.profile.en}
-<span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>`
-            },
-            'timeline': {
-                en: `<span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>
-<span class="glitch">Decoding_Encrypted_Fragments...</span>
-${personalData.timeline.en.join('<br>')}
-<span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>`
-            },
-            'game': {
-                ja: `<span class="comment">// ゲーム情報を取得中...</span>
-<span class="glitch">メタデータを解析中...</span>
-タイトル: '${personalData.game.title}'
-リンク: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>
-<span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>`,
-                en: `<span class="comment">// Retrieving GAME data...</span>
-<span class="glitch">Parsing_Metadata...</span>
-TITLE: '${personalData.game.title}'
-LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>
-<span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>`
-            },
-            'language': {
-                ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English)`,
-                en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English)`
-            },
-            'clear': () => { outputDiv.innerHTML = ''; },
-            'exit': {
-                ja: `<span class="error-line">システムシャットダウンを開始します...</span>`,
-                en: `<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`
-            }
+            'name': { ja: `<span class="comment">// 名前データを取得中...</span>\n<span class="glitch">データベース0x01にアクセス中...</span>\n名前フィールド: '${personalData.name.ja}'\n<span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>`, en: `<span class="comment">// Retrieving NAME data...</span>\n<span class="glitch">Accessing_Database_0x01...</span>\nNAME_FIELD: '${personalData.name.en}'\n<span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>` },
+            'profile': { ja: `<span class="comment">// プロファイル情報を取得中...</span>\n<span class="glitch">個人データキャッシュをスキャン中...</span>\n${personalData.profile.ja}\n<span class="error-line">エラー: 認証レベル不足 (CODE: 401)</span>`, en: `<span class="comment">// Retrieving PROFILE data...</span>\n<span class="glitch">Scanning_Personal_Data_Cache...</span>\n${personalData.profile.en}\n<span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>` },
+            'timeline': { en: `<span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>\n<span class="glitch">Decoding_Encrypted_Fragments...</span>\n${personalData.timeline.en.join('<br>')}\n<span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>` },
+            'game': { ja: `<span class="comment">// ゲーム情報を取得中...</span>\n<span class="glitch">メタデータを解析中...</span>\nタイトル: '${personalData.game.title}'\nリンク: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>\n<span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>`, en: `<span class="comment">// Retrieving GAME data...</span>\n<span class="glitch">Parsing_Metadata...</span>\nTITLE: '${personalData.game.title}'\nLINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>\n<span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>` },
+            'language': { ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English)`, en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English)` },
+            'clear': () => { outputContainer.innerHTML = ''; },
+            'exit': { ja: `<span class="error-line">システムシャットダウンを開始します...</span>`, en: `<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>` }
         };
         
         // --- メインロジック ---
-
-        // ★★★ 修正点 ★★★
-        // 古い行を削除するロジックを独立した関数に
-        function trimOldLines() {
-            while (outputDiv.scrollHeight > terminal.clientHeight && outputDiv.children.length > 0) {
-                outputDiv.removeChild(outputDiv.firstElementChild);
-            }
-        }
-
-        function addLine(htmlContent) {
+        
+        function addOutputLine(htmlContent) {
             const line = document.createElement('div');
             line.innerHTML = htmlContent;
-            outputDiv.appendChild(line);
-            trimOldLines(); // 新しい行を追加するたびに、はみ出た行を削除
-        }
+            outputContainer.insertBefore(line, outputContainer.firstChild);
 
-        function promptManager() {
-            let currentPromptLine = null;
-            let typedTextSpan = null;
-
-            this.newPrompt = function() {
-                if (currentPromptLine) {
-                    currentPromptLine.querySelector('.cursor')?.remove();
-                }
-                const promptHTML = `<span class="prompt">> </span><span class="typed-text"></span><span class="cursor"></span>`;
-                addLine(promptHTML);
-                currentPromptLine = outputDiv.lastElementChild;
-                typedTextSpan = currentPromptLine.querySelector('.typed-text');
-            };
-            
-            this.updateText = function(text) {
-                if(typedTextSpan) {
-                    typedTextSpan.textContent = text;
-                }
-            };
-            
-            this.finalize = function(command) {
-                if (currentPromptLine) {
-                     currentPromptLine.innerHTML = `<span class="prompt">> </span>${command}`;
-                }
+            while (terminal.scrollHeight > terminal.clientHeight && outputContainer.children.length > 0) {
+                 outputContainer.removeChild(outputContainer.lastElementChild);
             }
         }
-
-        const prompt = new promptManager();
+        
+        const typedTextSpan = document.createElement('span');
+        typedTextSpan.className = 'typed-text';
+        promptContainer.innerHTML = `<span class="prompt">> </span>`;
+        promptContainer.appendChild(typedTextSpan);
+        promptContainer.insertAdjacentHTML('beforeend', `<span class="cursor"></span>`);
 
         hiddenInput.addEventListener('input', () => {
             if (isExiting) return;
-            prompt.updateText(hiddenInput.value);
+            typedTextSpan.textContent = hiddenInput.value;
         });
 
         hiddenInput.addEventListener('keydown', (e) => {
-            if (isExiting) {
-                e.preventDefault();
-                return;
-            }
+            if (isExiting) { e.preventDefault(); return; }
 
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const command = hiddenInput.value.trim();
-
-                if(command) {
-                    commandHistory.unshift(command);
-                    historyIndex = -1;
-                }
-
-                prompt.finalize(command);
-                processCommand(command);
-                
-                if (!isExiting) {
-                    prompt.newPrompt();
+            const keyAction = {
+                'Enter': () => {
+                    e.preventDefault();
+                    const command = hiddenInput.value.trim();
+                    if(command) {
+                        commandHistory.unshift(command);
+                        historyIndex = -1;
+                    }
+                    // 実行したコマンドは、出力の先頭に追加する
+                    addOutputLine(`<span class="prompt">> </span>${command}`);
+                    processCommand(command);
                     hiddenInput.value = '';
-                    prompt.updateText('');
+                    typedTextSpan.textContent = '';
+                },
+                'ArrowUp': () => {
+                    e.preventDefault();
+                    if(historyIndex < commandHistory.length - 1) {
+                        historyIndex++;
+                        hiddenInput.value = commandHistory[historyIndex];
+                        typedTextSpan.textContent = hiddenInput.value;
+                    }
+                },
+                'ArrowDown': () => {
+                    e.preventDefault();
+                    if(historyIndex > 0) {
+                        historyIndex--;
+                        hiddenInput.value = commandHistory[historyIndex];
+                        typedTextSpan.textContent = hiddenInput.value;
+                    } else {
+                        historyIndex = -1;
+                        hiddenInput.value = '';
+                        typedTextSpan.textContent = '';
+                    }
                 }
-
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if(historyIndex < commandHistory.length - 1) {
-                    historyIndex++;
-                    hiddenInput.value = commandHistory[historyIndex];
-                    prompt.updateText(hiddenInput.value);
-                }
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                 if(historyIndex > 0) {
-                    historyIndex--;
-                    hiddenInput.value = commandHistory[historyIndex];
-                    prompt.updateText(hiddenInput.value);
-                } else {
-                    historyIndex = -1;
-                    hiddenInput.value = '';
-                    prompt.updateText('');
-                }
-            }
+            };
+            if (keyAction[e.key]) keyAction[e.key]();
         });
         
         function processCommand(command) {
@@ -331,9 +253,9 @@ LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;"
             if (languageSelectionMode) {
                 if (cmdLower === 'ja' || cmdLower === 'en') {
                     currentLanguage = cmdLower;
-                    addLine(`<span class="comment">// Language set to ${cmdLower}.</span>`);
+                    addOutputLine(`<span class="comment">// Language set to ${cmdLower}.</span>`);
                 } else {
-                    addLine(`<span class="error-line">ERROR: Unknown language code.</span>`);
+                    addOutputLine(`<span class="error-line">ERROR: Unknown language code.</span>`);
                 }
                 languageSelectionMode = false;
                 return;
@@ -346,23 +268,14 @@ LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;"
                 commandDef();
                 return;
             } else if (commandDef) {
-                if (cmdLower === 'timeline') {
-                    output = commandDef['en'];
-                } else {
-                    output = commandDef[currentLanguage] || commandDef['en'] || commandDef;
-                }
+                if (cmdLower === 'timeline') output = commandDef['en'];
+                else output = commandDef[currentLanguage] || commandDef['en'] || commandDef;
             } else if (command !== '') {
                 output = `<span class="error-line">COMMAND NOT FOUND: ${command}</span>`;
             }
 
-            if (output) {
-                addLine(output);
-            }
-
-            if (cmdLower === 'language') {
-                languageSelectionMode = true;
-            }
-
+            if (output) addOutputLine(output);
+            if (cmdLower === 'language') languageSelectionMode = true;
             if (cmdLower === 'exit') {
                 isExiting = true;
                 hiddenInput.blur();
@@ -371,21 +284,12 @@ LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;"
         }
         
         document.body.addEventListener('click', () => {
-            if (!isExiting) {
-                hiddenInput.focus();
-            }
+            if (!isExiting) hiddenInput.focus();
         });
-        
-        // ★★★ 修正点 ★★★
-        // visualViewport APIを使い、キーボード表示などで画面サイズが変わったことを検知
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', trimOldLines);
-        }
-
 
         // 初期表示
-        addLine("SYSTEM BOOT COMPLETE. TYPE 'help' FOR COMMANDS.");
-        prompt.newPrompt();
+        addOutputLine("SYSTEM BOOT COMPLETE. TYPE 'help' FOR COMMANDS.");
+
     </script>
 </body>
 </html>
