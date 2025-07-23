@@ -238,7 +238,7 @@
                 ja: "私は、コードとアートの境界を探求する観察者です。未知のシステムを解析し、次元間のデータを収集しています。特に、複雑なロジックと奇妙なインターフェースの構築に情熱を注いでいます。",
                 en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces.",
                 zh: "我是一个探索代码与艺术边界的观察者。我分析未知系统，并收集维度间的数据。我对构建复杂的逻辑和奇特的界面充满热情。",
-                ko: "저는 코드와 예술의 경계를 탐구하는 관찰자입니다. 미지의 시스템을 분석하고 차원 간 데이터를 수집합니다. 특히 복잡한 논리와 기묘한 인터페이스 구축에 열정적입니다."
+                ko: "저는 코드와 예술의 경계를 탐구하는 관찰자입니다. 미지의 시스템을 분석하고 차원 간 데이터를 수집합니다. 특히 복잡한 논리와 기묘한 인터페이스 구축에 열정적입니다。"
             }
         };
 
@@ -250,6 +250,7 @@
         
         let currentLanguage = 'ja'; // 現在の表示言語 (ja, en, zh, ko)
         let languageSelectionMode = false; // 言語選択モードかどうかのフラグ
+        let isExiting = false; // 終了処理中かどうかのフラグ
 
         // コマンドとそれに対応する出力定義 (言語対応)
         const commands = {
@@ -479,6 +480,8 @@
 
         // hiddenInputの値が変更されたときに typedTextSpan を更新する
         hiddenInput.addEventListener('input', () => {
+            if (isExiting) return; // 終了処理中は入力表示を更新しない
+
             typedTextSpan = document.getElementById('typed-text'); // 常に最新の要素を取得
             if (typedTextSpan) {
                 typedTextSpan.textContent = hiddenInput.value;
@@ -488,13 +491,17 @@
 
         // Enterキーが押されたときの処理 (PC/スマホ共通)
         hiddenInput.addEventListener('keydown', (e) => {
+            if (isExiting) { // 終了処理中はEnterキーを無効にする
+                e.preventDefault();
+                return;
+            }
+
             if (e.key === 'Enter') {
                 e.preventDefault(); // デフォルトの改行動作を防ぐ
                 const fullCommand = hiddenInput.value.trim(); // 入力されたコマンド全体
                 processCommand(fullCommand);
                 hiddenInput.value = ''; // 入力フィールドをクリア
-                // typedTextSpan.textContent は updateTerminalDisplay で新しい要素に置き換えられるため不要
-                scrollToBottom(); // コマンド実行後に一番下へスクロール
+                scrollToBottom(); 
             }
         });
 
@@ -504,20 +511,21 @@
 
             const parts = fullCommand.split(' ');
             let commandInput = parts[0].toLowerCase(); // 入力されたコマンドの最初の部分
+            let actualCommand = null; // 実際のコマンド名を保持する変数
 
+            // 言語選択モードの処理
             if (languageSelectionMode) {
-                // 言語選択モードの場合の処理
                 if (['ja', 'en', 'zh', 'ko'].includes(commandInput)) {
                     currentLanguage = commandInput;
                     languageSelectionMode = false; // モード終了
                     outputLines.push(`<span class="comment">// 言語設定を '${commandInput}' に変更しました。</span>`);
-                    outputLines.push(`<span class="comment">// ${languageInitialMessages[currentLanguage].replace('<br>',' ')}</span>`); // 新しい言語でヒントを表示
+                    outputLines.push(languageInitialMessages[currentLanguage].replace('<br>',' ')); // 新しい言語でヒントを表示
                 } else {
                     outputLines.push(`<span class="error-line">${languageErrorMessages[currentLanguage]}</span>`);
                 }
             } else {
-                // 通常モードの場合の処理
-                const actualCommand = commandAliases[currentLanguage][commandInput]; // エイリアスから実際のコマンド名を取得
+                // 通常モードの処理
+                actualCommand = commandAliases[currentLanguage][commandInput]; // エイリアスから実際のコマンド名を取得
 
                 if (actualCommand === 'language') {
                     languageSelectionMode = true; // 言語選択モードに入る
@@ -532,14 +540,17 @@
                 }
             }
 
-            if (actualCommand === 'clear') { // 'clear' コマンドが実行された場合
+            // 'clear' および 'exit' コマンドの特別処理
+            if (actualCommand === 'clear') { 
                 outputLines = []; // 画面クリア
                 // クリア後の初期メッセージを再表示 (現在の言語で)
                 outputLines.push(languageInitialMessages[currentLanguage]);
                 scrollToBottom(); // clearした場合は一番上から始まるのでスクロール
             } else if (actualCommand === 'exit') {
+                isExiting = true; // 終了処理中フラグを立てる
                 outputLines.push(`<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`);
                 updateTerminalDisplay(); // 終了メッセージを表示
+                hiddenInput.blur(); // hiddenInputからフォーカスを外す
                 setTimeout(() => location.reload(), 2000); // 2秒後にページをリロードして終了
                 return; // exitコマンドの場合はこれ以上処理しない
             }
@@ -554,8 +565,6 @@
             
             // typedTextSpanを再取得 (DOMが更新されたため、常に最新の要素に紐づける)
             typedTextSpan = document.getElementById('typed-text'); 
-            
-            // スクロールはここでのみ実行 (clear時とEnter時)
         }
 
         // 自動スクロール
@@ -574,7 +583,9 @@
 
         // どこをクリックしても隠しinputにフォーカス
         document.addEventListener('click', () => {
-            hiddenInput.focus();
+            if (!isExiting) { // 終了処理中でない場合のみフォーカスする
+                hiddenInput.focus();
+            }
         });
     </script>
 </body>
