@@ -21,6 +21,8 @@
             cursor: text; /* テキストカーソル */
             user-select: none; /* テキスト選択を無効に */
             -webkit-tap-highlight-color: transparent; /* モバイルでのタップ時のハイライトを無効に */
+            /* iOSのキーボード表示によるズームを防ぐ */
+            touch-action: manipulation; 
         }
 
         /* 奇妙な背景グリッド */
@@ -178,15 +180,11 @@
         const personalData = {
             name: {
                 ja: "八百井 陽平",
-                en: "Yohei Yaoi",
-                zh: "八百井 陽平 (Yāobǎi Yángpíng)",
-                ko: "야오이 요헤이 (Yaoi Yohei)"
+                en: "Yohei Yaoi"
             },
             age: {
                 ja: "19歳 (システム年齢: 0x13)",
-                en: "19 years old (System Age: 0x13)",
-                zh: "19岁 (系统年龄: 0x13)",
-                ko: "19세 (시스템 연령: 0x13)"
+                en: "19 years old (System Age: 0x13)"
             },
             timeline: {
                 ja: [
@@ -208,26 +206,6 @@
                     "// PROJECT: SELF_REFERENCE_MATRIX_CONSTRUCTION (STATUS: 87% COMPLETE)",
                     "// NOTE: EXTERNAL_ENTITIES_MONITORING_PROCESS (HIGH_PRIORITY)",
                     "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"
-                ],
-                zh: [
-                    "/* 2006年6月7日: 八百井阳平降生于此维度 */",
-                    "// 事件: 存在扭曲事件发生 (初始记录)",
-                    "// 行动: 信息流收集启动 (阶段1)",
-                    "// 警告: 时空流异常检测 (状态: 进行中)",
-                    "/* 日志: 时间转移观测 (日期: 20XX年第三季度) */",
-                    "// 项目: 自我参照矩阵构建 (状态: 完成87%)",
-                    "// 注意: 外部实体监控过程 (优先级: 高)",
-                    "/* 当前状态: 系统稳定但已受损 */"
-                ],
-                ko: [
-                    "/* 2006년 6월 7일: 야오이 요헤이, 이 차원에 탄생 */",
-                    "// 이벤트: 존재 왜곡 현상 발생 (초기 기록)",
-                    "// 행동: 정보 스트림 수집 시작 (단계 1)",
-                    "// 경고: 시공간 흐름 이상 감지 (상태: 진행 중)",
-                    "/* 로그: 시간 전이 관측 (날짜: 20XX年 3분기) */",
-                    "// 프로젝트: 자기 참조 매트릭스 구축 (상태: 87% 완료)",
-                    "// 참고: 외부 개체 모니터링 프로세스 (우선순위: 높음)",
-                    "/* 현재 상태: 시스템 안정성 저하, 침입 가능성 있음 */"
                 ]
             },
             game: {
@@ -236,9 +214,7 @@
             },
             profile: {
                 ja: "私は、コードとアートの境界を探求する観察者です。未知のシステムを解析し、次元間のデータを収集しています。特に、複雑なロジックと奇妙なインターフェースの構築に情熱を注いでいます。",
-                en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces.",
-                zh: "我是一个探索代码与艺术边界的观察者。我分析未知系统，并收集维度间的数据。我对构建复杂的逻辑和奇特的界面充满热情。",
-                ko: "저는 코드와 예술의 경계를 탐구하는 관찰자입니다. 미지의 시스템을 분석하고 차원 간 데이터를 수집합니다. 특히 복잡한 논리와 기묘한 인터페이스 구축에 열정적입니다。"
+                en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces."
             }
         };
 
@@ -248,7 +224,7 @@
         const hiddenInput = document.getElementById('hiddenInput');
         let outputLines = [];
         
-        let currentLanguage = 'ja'; // 現在の表示言語 (ja, en, zh, ko)
+        let currentLanguage = 'ja'; // 現在の表示言語 (ja, en)
         let languageSelectionMode = false; // 言語選択モードかどうかのフラグ
         let isExiting = false; // 終了処理中かどうかのフラグ
 
@@ -278,30 +254,6 @@
                 <span class="highlight">language</span> - Change language (type 'language' then a language code)
                 <span class="highlight">clear</span>    - Clear terminal screen
                 <span class="highlight">exit</span>     - Close session
-                `,
-                zh: `
-                <span class="comment">// 可用命令:</span>
-                <span class="highlight">help</span>     - 显示命令列表
-                <span class="highlight">名字</span>     - 显示用户名
-                <span class="highlight">年龄</span>     - 显示用户年龄
-                <span class="highlight">年表</span>     - 显示时间线事件
-                <span class="highlight">游戏</span>     - 显示所创建游戏信息
-                <span class="highlight">简介</span>     - 显示个人简介
-                <span class="highlight">语言</span>     - 更改语言 (输入'语言'后, 输入语言代码)
-                <span class="highlight">清除</span>     - 清除终端屏幕
-                <span class="highlight">退出</span>     - 关闭会话
-                `,
-                ko: `
-                <span class="comment">// 사용 가능한 명령:</span>
-                <span class="highlight">help</span>     - 명령 목록 표시
-                <span class="highlight">이름</span>     - 사용자 이름 표시
-                <span class="highlight">나이</span>     - 사용자 나이 표시
-                <span class="highlight">연대표</span>    - 시간순 이벤트 표시
-                <span class="highlight">게임</span>     - 제작 게임 정보 표시
-                <span class="highlight">프로필</span>   - 자기소개 표시
-                <span class="highlight">언어</span>     - 언어 설정 변경 ('언어' 입력 후 언어 코드 입력)
-                <span class="highlight">지우기</span>   - 터미널 화면 지우기
-                <span class="highlight">종료</span>     - 세션 종료
                 `
             },
             'name': {
@@ -316,18 +268,6 @@
                 <span class="glitch">Accessing_Database_0x01...</span>
                 <span class="output">NAME_FIELD: '${personalData.name.en}'</span>
                 <span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>
-                `,
-                zh: `
-                <span class="comment">// 正在检索名称数据...</span>
-                <span class="glitch">正在访问数据库0x01...</span>
-                <span class="output">名称字段: '${personalData.name.zh}'</span>
-                <span class="error-line">错误: 数据完整性检查失败 (代码: 0xDEADBEEF)</span>
-                `,
-                ko: `
-                <span class="comment">// 이름 데이터 검색 중...</span>
-                <span class="glitch">데이터베이스 0x01에 접근 중...</span>
-                <span class="output">이름 필드: '${personalData.name.ko}'</span>
-                <span class="error-line">오류: 데이터 무결성 검사 실패 (코드: 0xDEADBEEF)</span>
                 `
             },
             'age': {
@@ -342,18 +282,6 @@
                 <span class="glitch">Processing_Temporal_Calculations...</span>
                 <span class="output">AGE_FIELD: '${personalData.age.en}'</span>
                 <span class="error-line">WARNING: TEMPORAL_ANOMALY_DETECTED (SEVERITY: MODERATE)</span>
-                `,
-                zh: `
-                <span class="comment">// 正在查询年龄模块...</span>
-                <span class="glitch">正在处理时间计算...</span>
-                <span class="output">年龄字段: '${personalData.age.zh}'</span>
-                <span class="error-line">警告: 检测到时间异常 (严重性: 中)</span>
-                `,
-                ko: `
-                <span class="comment">// 연령 모듈 조회 중...</span>
-                <span class="glitch">시간 계산 처리 중...</span>
-                <span class="output">연령 필드: '${personalData.age.ko}'</span>
-                <span class="error-line">경고: 시간 이상 감지됨 (심각도: 중간)</span>
                 `
             },
             'timeline': {
@@ -368,18 +296,6 @@
                 <span class="glitch">Decoding_Encrypted_Fragments...</span>
                 ${personalData.timeline.en.map(item => `<span class="output">${item}</span>`).join('\n')}
                 <span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>
-                `,
-                zh: `
-                <span class="comment">// 正在获取时间顺序日志...</span>
-                <span class="glitch">正在解码加密片段...</span>
-                ${personalData.timeline.zh.map(item => `<span class="output">${item}</span>`).join('\n')}
-                <span class="error-line">严重错误: 缺少日志片段 (ID: F9F9F9)</span>
-                `,
-                ko: `
-                <span class="comment">// 연대기 로그 가져오는 중...</span>
-                <span class="glitch">암호화된 조각 해독 중...</span>
-                ${personalData.timeline.ko.map(item => `<span class="output">${item}</span>`).join('\n')}
-                <span class="error-line">치명적 오류: 로그 조각 누락 (ID: F9F9F9)</span>
                 `
             },
             'game': {
@@ -396,20 +312,6 @@
                 <span class="output">TITLE: '${personalData.game.title}'</span>
                 <span class="output">LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
                 <span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>
-                `,
-                zh: `
-                <span class="comment">// 正在检索游戏数据...</span>
-                <span class="glitch">正在解析元数据...</span>
-                <span class="output">标题: '${personalData.game.title}'</span>
-                <span class="output">链接: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
-                <span class="error-line">警告: 连接到外部链接 (推荐度: 低)</span>
-                `,
-                ko: `
-                <span class="comment">// 게임 데이터 검색 중...</span>
-                <span class="glitch">메타데이터 분석 중...</span>
-                <span class="output">제목: '${personalData.game.title}'</span>
-                <span class="output">링크: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
-                <span class="error-line">경고: 외부 링크 연결 (권장: 낮음)</span>
                 `
             },
             'profile': {
@@ -424,54 +326,34 @@
                 <span class="glitch">Scanning_Personal_Data_Cache...</span>
                 <span class="output">${personalData.profile.en}</span>
                 <span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>
-                `,
-                zh: `
-                <span class="comment">// 正在检索个人资料数据...</span>
-                <span class="glitch">正在扫描个人数据缓存...</span>
-                <span class="output">${personalData.profile.zh}</span>
-                <span class="error-line">错误: 认证级别不足 (代码: 401)</span>
-                `,
-                ko: `
-                <span class="comment">// 프로필 데이터 검색 중...</span>
-                <span class="glitch">개인 데이터 캐시 스캔 중...</span>
-                <span class="output">${personalData.profile.ko}</span>
-                <span class="error-line">오류: 인증 레벨 부족 (코드: 401)</span>
                 `
             },
             'clear': {
-                ja: null, en: null, zh: null, ko: null // clearは特別な処理なので出力は不要
+                ja: null, en: null // clearは特別な処理なので出力は不要
             },
             'exit': {
-                ja: null, en: null, zh: null, ko: null // exitは特別な処理なので出力は不要
+                ja: null, en: null // exitは特別な処理なので出力は不要
             }
         };
 
         const commandAliases = { // 現在の言語で利用可能なコマンドのエイリアス
             'ja': { 'help': 'help', '名前': 'name', '年齢': 'age', '年表': 'timeline', 'ゲーム': 'game', 'プロファイル': 'profile', '言語': 'language', 'クリア': 'clear', '終了': 'exit' },
-            'en': { 'help': 'help', 'name': 'name', 'age': 'age', 'timeline': 'timeline', 'game': 'game', 'profile': 'profile', 'language': 'language', 'clear': 'clear', 'exit': 'exit' },
-            'zh': { 'help': 'help', '名字': 'name', '年龄': 'age', '年表': 'timeline', '游戏': 'game', '简介': 'profile', '语言': 'language', '清除': 'clear', '退出': 'exit' },
-            'ko': { 'help': 'help', '이름': 'name', '나이': 'age', '연대표': 'timeline', '게임': 'game', '프로필': 'profile', '언어': 'language', '지우기': 'clear', '종료': 'exit' }
+            'en': { 'help': 'help', 'name': 'name', 'age': 'age', 'timeline': 'timeline', 'game': 'game', 'profile': 'profile', 'language': 'language', 'clear': 'clear', 'exit': 'exit' }
         };
 
         const languageInitialMessages = {
             ja: `ACCESS GRANTED.<br>WELCOME, USER. 'help'と入力してください。`,
-            en: `ACCESS GRANTED.<br>WELCOME, USER. TYPE 'help' FOR COMMAND LIST.`,
-            zh: `ACCESS GRANTED.<br>欢迎, 用户. 输入 'help' 查看命令列表.`,
-            ko: `ACCESS GRANTED.<br>환영합니다, 사용자. 'help'를 입력하여 명령 목록을 확인하세요.`
+            en: `ACCESS GRANTED.<br>WELCOME, USER. TYPE 'help' FOR COMMAND LIST.`
         };
 
         const languageSelectionMessages = {
-            ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`,
-            en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`,
-            zh: `请从以下命令中选择您想使用的语言: <span class="highlight">ja</span> (日语), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`,
-            ko: `다음 명령어 중에서 사용하고 싶은 언어를 선택하여 입력하십시오: <span class="highlight">ja</span> (일본어), <span class="highlight">en</span> (English), <span class="highlight">zh</span> (中文), <span class="highlight">ko</span> (한국어)`
+            ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English)`,
+            en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English)`
         };
 
         const languageErrorMessages = {
-            ja: `エラー: 不明な言語コマンドです。'ja', 'en', 'zh', 'ko' のいずれかを入力してください。`,
-            en: `ERROR: Unknown language command. Please enter 'ja', 'en', 'zh', or 'ko'.`,
-            zh: `错误: 未知语言命令。请输入 'ja', 'en', 'zh' 或 'ko'。`,
-            ko: `오류: 알 수 없는 언어 명령어입니다. 'ja', 'en', 'zh', 또는 'ko' 중 하나를 입력하십시오.`
+            ja: `エラー: 不明な言語コマンドです。'ja' または 'en' のいずれかを入力してください。`,
+            en: `ERROR: Unknown language command. Please enter 'ja' or 'en'.`
         };
 
 
@@ -486,7 +368,9 @@
             if (typedTextSpan) {
                 typedTextSpan.textContent = hiddenInput.value;
             }
-            // ここではスクロールは**しない** (ユーザーが手動でスクロールした位置を維持)
+            // タイプ時に自動スクロールしないように、ここではscrollToBottomを呼び出さない
+            // 代わりに、入力中の行が見えるようにする処理を mobileAdjustView に集約
+            mobileAdjustView(); 
         });
 
         // Enterキーが押されたときの処理 (PC/スマホ共通)
@@ -501,8 +385,7 @@
                 const fullCommand = hiddenInput.value.trim(); // 入力されたコマンド全体
                 processCommand(fullCommand);
                 hiddenInput.value = ''; // 入力フィールドをクリア
-                // コマンド実行後に一番下へスクロール
-                scrollToBottom(); 
+                scrollToBottom(); // コマンド実行後に一番下へスクロール
             }
         });
 
@@ -516,7 +399,7 @@
 
             // 言語選択モードの処理
             if (languageSelectionMode) {
-                if (['ja', 'en', 'zh', 'ko'].includes(commandInput)) {
+                if (['ja', 'en'].includes(commandInput)) { // 対応言語を ja, en に変更
                     currentLanguage = commandInput;
                     languageSelectionMode = false; // モード終了
                     outputLines.push(`<span class="comment">// 言語設定を '${commandInput}' に変更しました。</span>`);
@@ -562,37 +445,63 @@
 
         // ターミナル表示の更新
         function updateTerminalDisplay() {
-            // 現在のスクロール位置を保存
-            const scrollTop = terminal.scrollTop;
-            const scrollHeight = terminal.scrollHeight;
-            const clientHeight = terminal.clientHeight;
-            const isScrolledToBottom = (scrollHeight - scrollTop - clientHeight < 1); // ほぼ一番下にいるか判定
-
             // これまでの履歴と現在の入力行を結合して表示
             outputDiv.innerHTML = outputLines.join('<br>') + `<br><span class="prompt">> </span><span id="typed-text"></span><span class="cursor"></span>`;
             
             // typedTextSpanを再取得 (DOMが更新されたため、常に最新の要素に紐づける)
             typedTextSpan = document.getElementById('typed-text'); 
             
-            // ユーザーが手動でスクロールした位置を維持するか、一番下にいる場合は自動スクロールする
-            if (!isExiting && !languageSelectionMode && !isScrolledToBottom) {
-                 // 終了処理中ではなく、言語選択モードでもなく、かつ一番下ではない場合
-                 // スクロール位置を維持する (ただし、入力によるスクロールはさせない)
-                 // この時点では、DOM更新によって一時的にスクロール位置がリセットされる可能性があるため、
-                 // 次のフレームでスクロール位置を復元する
-                 requestAnimationFrame(() => {
-                     terminal.scrollTop = scrollTop;
-                 });
-            } else if (isScrolledToBottom || isExiting || languageSelectionMode) {
-                 // もともと一番下にいた場合、または終了・言語選択モードの場合は、一番下にスクロール
-                 scrollToBottom();
-            }
+            // スクロールは、inputイベントでは行わず、Enterキー時とClear時にのみ実行
+            // モバイルキーボードの調整は別途 mobileAdjustView で対応
         }
 
         // 自動スクロール
         function scrollToBottom() {
             terminal.scrollTop = terminal.scrollHeight;
         }
+
+        // スマホでのキーボード表示時に入力行を適切に表示する関数
+        function mobileAdjustView() {
+            // PCの場合は何もしない
+            if (window.innerWidth > 768) {
+                return;
+            }
+
+            // typedTextSpanの親要素（.output内の一番最後の行）を取得
+            const lastLine = typedTextSpan.parentNode;
+            if (!lastLine) return;
+
+            // typedTextSpanがターミナルコンテナのどこにあるか計算
+            const terminalRect = terminal.getBoundingClientRect();
+            const lastLineRect = lastLine.getBoundingClientRect();
+
+            // lastLineのターミナルコンテナ内での相対位置
+            const relativeBottom = lastLineRect.bottom - terminalRect.top;
+            const relativeTop = lastLineRect.top - terminalRect.top;
+
+            // ターミナルコンテナの表示領域（キーボードを考慮）
+            // window.innerHeight がキーボード表示で変化する可能性があるので、
+            // keyboardHeight を動的に計算する方が望ましいが、ここでは簡易的に固定
+            // もしくは、hiddenInput.getBoundingClientRect().bottom - window.innerHeight
+            // といった方法でキーボードの高さを推定することも可能だが、複雑になるため、
+            // 最後の行がビューポートの下部に見えるように調整する
+            const viewportHeight = window.innerHeight;
+            const currentScrollTop = terminal.scrollTop;
+
+            // もし入力行がビューポートの下部（キーボードがあるであろう場所）で見切れていたらスクロール
+            // (キーボードの高さを仮に200pxとして計算。環境によって調整が必要)
+            const keyboardEstimateHeight = Math.min(window.innerHeight * 0.4, 300); // ビューポートの最大40%、最大300px
+            const visibleTerminalBottom = terminalRect.height; // ターミナルコンテナ自体の高さ
+
+            if (relativeBottom > visibleTerminalBottom - keyboardEstimateHeight) {
+                // 入力行がキーボードで隠れる可能性がある場合、その行が表示されるようにスクロール
+                terminal.scrollTop = currentScrollTop + (relativeBottom - (visibleTerminalBottom - keyboardEstimateHeight));
+            } else if (relativeTop < 0) {
+                // 入力行が上に見切れている場合（稀だが念のため）
+                terminal.scrollTop = currentScrollTop + relativeTop;
+            }
+        }
+
 
         // ページロード時に隠しinputにフォーカス
         window.addEventListener('load', () => {
@@ -609,6 +518,10 @@
                 hiddenInput.focus();
             }
         });
+        
+        // windowのリサイズイベント（スマホでのキーボード表示/非表示もトリガーになる）
+        window.addEventListener('resize', mobileAdjustView);
+        
     </script>
 </body>
 </html>
