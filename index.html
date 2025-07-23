@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM_ACCESS: PERSONAL_LOG</title>
+    <style>
+        /* 全体のスタイル */
+        body {
+            margin: 0;
+            overflow: hidden; /* スクロールバーを非表示に */
+            background-color: #000000; /* 真っ黒な背景 */
+            color: #00ff00; /* ターミナル風の緑色のテキスト */
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace; /* プログラミング向きのフォント */
+            font-size: 1.1em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            cursor: text; /* テキストカーソル */
+            user-select: none; /* テキスト選択を無効に */
+            -webkit-tap-highlight-color: transparent; /* モバイルでのタップ時のハイライトを無効に */
+        }
+
+        /* 奇妙な背景グリッド */
+        .background-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(0deg, transparent 24%, rgba(0,255,0,0.05) 25%, rgba(0,255,0,0.05) 26%, transparent 27%, transparent 74%, rgba(0,255,0,0.05) 75%, rgba(0,255,0,0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0,255,0,0.05) 25%, rgba(0,255,0,0.05) 26%, transparent 27%, transparent 74%, rgba(0,255,0,0.05) 75%, rgba(0,255,0,0.05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        /* ターミナル画面のコンテナ */
+        .terminal-container {
+            width: 90%;
+            max-width: 900px;
+            height: 80vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00cc00; /* 緑のボーダー */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto; /* スクロール可能に */
+            position: relative;
+            z-index: 1;
+        }
+
+        /* スクロールバーのスタイル（WebKit/Blink系ブラウザ用） */
+        .terminal-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-container::-webkit-scrollbar-track {
+            background: #0d0d0d;
+        }
+        .terminal-container::-webkit-scrollbar-thumb {
+            background: #008800;
+            border-radius: 4px;
+        }
+
+        /* 入力プロンプト */
+        .prompt {
+            color: #00ff00;
+            white-space: pre; /* 改行を保持 */
+        }
+
+        /* 出力テキスト */
+        .output {
+            color: #00ff00;
+            white-space: pre-wrap; /* 改行とスペースを保持し、折り返す */
+            margin-bottom: 10px;
+        }
+
+        /* 点滅するカーソル */
+        .cursor {
+            display: inline-block;
+            background-color: #00ff00;
+            width: 10px;
+            height: 1.1em; /* フォントの高さに合わせる */
+            vertical-align: middle;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* キーボード入力を見せないための隠し入力フィールド */
+        .hidden-input {
+            position: absolute;
+            /* 画面外に配置し、透明にする */
+            width: 1px;
+            height: 1px;
+            top: -9999px;
+            left: -9999px;
+            opacity: 0;
+            /* pointer-events: none; は維持 */
+            pointer-events: none; /* これがないとスマホでキーボードが出てこない場合がある */
+        }
+
+        /* 奇妙なグリッチエフェクト（エラー風アニメーション） */
+        .glitch {
+            animation: textGlitch 0.3s infinite alternate;
+        }
+
+        @keyframes textGlitch {
+            0% { text-shadow: 0 0 1px #00ff00, 1px -1px 0px #ff00ff; transform: translateX(0px) translateY(0px); }
+            33% { text-shadow: -1px 1px 0px #ff0000, 0 0 1px #00ff00; transform: translateX(2px) translateY(-1px); }
+            66% { text-shadow: 1px 1px 0px #00ffff, -1px -1px 0px #00ff00; transform: translateX(-1px) translateY(2px); }
+            100% { text-shadow: 0 0 1px #00ff00, 1px -1px 0px #ff00ff; transform: translateX(0px) translateY(0px); }
+        }
+
+        /* エラーメッセージ（奇妙な演出） */
+        .error-line {
+            color: #ff3333;
+            font-weight: bold;
+            text-shadow: 0 0 5px #ff0000;
+            animation: errorBlink 1s infinite step-end;
+        }
+
+        @keyframes errorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 特定のコマンドに対するスタイル */
+        .highlight {
+            color: #ffff00; /* 黄色 */
+        }
+
+        /* プログラミング風コメント */
+        .comment {
+            color: #888; /* 灰色 */
+        }
+
+        /* --- レスポンシブ対応 --- */
+        /* スマートフォン向け調整 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.9em; /* 小さめのフォントサイズ */
+                align-items: flex-start; /* 画面上部に寄せる */
+                padding-top: 5vh; /* 上部に少し余白 */
+            }
+
+            .terminal-container {
+                width: 95%; /* 横幅を広げる */
+                height: 85vh; /* 縦幅を広げる */
+                padding: 15px; /* パディングを減らす */
+            }
+            
+            /* スマホではカーソルの幅を少し小さく */
+            .cursor {
+                width: 8px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-grid"></div>
+
+    <div class="terminal-container" id="terminal">
+        <div class="output" id="output">
+            <span class="prompt">ACCESS GRANTED.</span><br>
+            <span class="prompt">WELCOME, USER. TYPE 'help' FOR COMMAND LIST.</span><br><br>
+            <span class="prompt">> </span><span id="typed-text"></span><span class="cursor"></span>
+        </div>
+        <input type="text" class="hidden-input" id="hiddenInput" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+
+    <script>
+        // 後で編集する情報
+        const personalData = {
+            name: "YOHEI YAOI", // ここにあなたの名前を追加
+            age: "19",       // ここにあなたの年齢を追加
+            timeline: [
+                "/* 2006 6/7 Yohei Yaoi was borned */",
+                "// EVENT: EXISTENCE_MANIFESTATION_AT_COORDINATES [X.Y.Z]",
+                "// ACTION: DATA_STREAM_COLLECTION_INITIATED (PHASE_1)",
+                "// ALERT: ANOMALY_DETECTED_IN_TIME_FLOW (STATUS: ONGOING)",
+                "/* LOG: TEMPORAL_SHIFT_OBSERVED (DATE: 20XX_Q3) */",
+                "// PROJECT: SELF_REFERENCE_MATRIX_CONSTRUCTION (STATUS: 87% COMPLETE)",
+                "// NOTE: EXTERNAL_ENTITIES_MONITORING_PROCESS (HIGH_PRIORITY)",
+                "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"
+                // ここに年表（出来事）をプログラミング風のコメントで追加できます
+                // 例: "// NEW_DATA: UNEXPECTED_SIGNAL_RECEIVED_FROM_SECTOR_7 (20YY)"
+            ]
+        };
+
+        const terminal = document.getElementById('terminal');
+        const outputDiv = document.getElementById('output');
+        let typedTextSpan = document.getElementById('typed-text');
+        const hiddenInput = document.getElementById('hiddenInput');
+        let outputLines = [];
+
+        // 入力に応じた情報とコマンド
+        const commands = {
+            'help': `
+            <span class="comment">// Available Commands:</span>
+            <span class="highlight">name</span>     - Display user name.
+            <span class="highlight">age</span>      - Display user age.
+            <span class="highlight">timeline</span> - Show chronological events.
+            <span class="highlight">clear</span>    - Clear terminal screen.
+            <span class="highlight">exit</span>     - Close session (reload page).
+            `,
+            'name': `
+            <span class="comment">// Retrieving NAME data...</span>
+            <span class="glitch">Accessing_Database_0x01...</span>
+            <span class="output">NAME_FIELD: '${personalData.name}'</span>
+            <span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>
+            `,
+            'age': `
+            <span class="comment">// Querying AGE_MODULE...</span>
+            <span class="glitch">Processing_Temporal_Calculations...</span>
+            <span class="output">AGE_FIELD: '${personalData.age}'</span>
+            <span class="error-line">WARNING: TEMPORAL_ANOMALY_DETECTED (SEVERITY: MODERATE)</span>
+            `,
+            'timeline': `
+            <span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>
+            <span class="glitch">Decoding_Encrypted_Fragments...</span>
+            ${personalData.timeline.map(item => `<span class="output">${item}</span>`).join('\n')}
+            <span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>
+            `
+        };
+
+        // 初期フォーカス設定
+        hiddenInput.focus();
+
+        // hiddenInputの値が変更されたときに typedTextSpan を更新する
+        hiddenInput.addEventListener('input', () => {
+            typedTextSpan = document.getElementById('typed-text'); // 常に最新の要素を取得
+            if (typedTextSpan) {
+                typedTextSpan.textContent = hiddenInput.value;
+            }
+            scrollToBottom(); // 入力に合わせてスクロール
+        });
+
+        // Enterキーが押されたときの処理 (PC/スマホ共通)
+        hiddenInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // デフォルトの改行動作を防ぐ
+                const command = hiddenInput.value.trim(); // 入力されたコマンドを取得
+                processCommand(command);
+                hiddenInput.value = ''; // 入力フィールドをクリア
+                scrollToBottom();
+            }
+            // スマホでの予測変換などによる文字入力に対応するため、Backspace以外はhiddenInput.valueで処理
+            // 今回のhiddenInput.addEventListener('input')でリアルタイム表示しているのでkeydownの個別の文字処理は不要
+        });
+
+        // コマンド処理
+        function processCommand(command) {
+            outputLines.push(`<span class="prompt">> ${command}</span>`); // 実行されたコマンドを履歴に追加
+            let output = commands[command.toLowerCase()];
+
+            if (output) {
+                outputLines.push(output);
+            } else {
+                outputLines.push(`<span class="error-line">ERROR: COMMAND NOT FOUND: '${command}'</span>`);
+                outputLines.push(`<span class="comment">// Type 'help' for available commands.</span>`);
+            }
+
+            if (command.toLowerCase() === 'clear') {
+                outputLines = []; // 画面クリア
+                // クリア後の初期メッセージを再表示
+                outputLines.push(`<span class="prompt">ACCESS GRANTED.</span>`);
+                outputLines.push(`<span class="prompt">WELCOME, USER. TYPE 'help' FOR COMMAND LIST.</span>`);
+            } else if (command.toLowerCase() === 'exit') {
+                outputLines.push(`<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`);
+                updateTerminalDisplay(); // 終了メッセージを表示
+                setTimeout(() => location.reload(), 2000); // 2秒後にページをリロードして終了
+                return; // exitコマンドの場合はこれ以上処理しない
+            }
+
+            updateTerminalDisplay();
+        }
+
+        // ターミナル表示の更新
+        function updateTerminalDisplay() {
+            // これまでの履歴と現在の入力行を結合して表示
+            outputDiv.innerHTML = outputLines.join('<br>') + `<br><span class="prompt">> </span><span id="typed-text"></span><span class="cursor"></span>`;
+            
+            // typedTextSpanを再取得 (DOMが更新されたため、常に最新の要素に紐づける)
+            typedTextSpan = document.getElementById('typed-text'); 
+            
+            scrollToBottom();
+        }
+
+        // 自動スクロール
+        function scrollToBottom() {
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // ページロード時に隠しinputにフォーカス
+        window.addEventListener('load', () => {
+            hiddenInput.focus();
+        });
+
+        // どこをクリックしても隠しinputにフォーカス
+        document.addEventListener('click', () => {
+            hiddenInput.focus();
+        });
+    </script>
+</body>
+</html>
