@@ -8,24 +8,22 @@
         /* 全体のスタイル */
         body {
             margin: 0;
-            overflow: hidden; /* スクロールバーを非表示に */
-            background-color: #000000; /* 真っ黒な背景 */
-            color: #00ff00; /* ターミナル風の緑色のテキスト */
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace; /* プログラミング向きのフォント */
+            overflow: hidden;
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 1.1em;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             position: relative;
-            cursor: text; /* テキストカーソル */
-            user-select: none; /* テキスト選択を無効に */
-            -webkit-tap-highlight-color: transparent; /* モバイルでのタップ時のハイライトを無効に */
-            /* iOSのキーボード表示によるズームを防ぐ */
-            touch-action: manipulation; 
+            cursor: text;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
-        /* 奇妙な背景グリッド */
         .background-grid {
             position: absolute;
             top: 0;
@@ -40,52 +38,41 @@
             z-index: 0;
         }
 
-        /* ターミナル画面のコンテナ */
         .terminal-container {
             width: 90%;
             max-width: 900px;
             height: 80vh;
             background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00cc00; /* 緑のボーダー */
+            border: 2px solid #00cc00;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
             padding: 20px;
             box-sizing: border-box;
-            overflow-y: auto; /* スクロール可能に */
+            overflow: hidden;
             position: relative;
             z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
         }
 
-        /* スクロールバーのスタイル（WebKit/Blink系ブラウザ用） */
-        .terminal-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        .terminal-container::-webkit-scrollbar-track {
-            background: #0d0d0d;
-        }
-        .terminal-container::-webkit-scrollbar-thumb {
-            background: #008800;
-            border-radius: 4px;
+        #output {
+            width: 100%;
         }
 
-        /* 入力プロンプト */
-        .prompt {
+        #output > div {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .prompt, .typed-text {
             color: #00ff00;
-            white-space: pre; /* 改行を保持 */
         }
-
-        /* 出力テキスト */
-        .output {
-            color: #00ff00;
-            white-space: pre-wrap; /* 改行とスペースを保持し、折り返す */
-            margin-bottom: 10px;
-        }
-
-        /* 点滅するカーソル */
+        
         .cursor {
             display: inline-block;
             background-color: #00ff00;
             width: 10px;
-            height: 1.1em; /* フォントの高さに合わせる */
+            height: 1.1em;
             vertical-align: middle;
             animation: blink 1s infinite;
         }
@@ -95,7 +82,6 @@
             50% { opacity: 0; }
         }
 
-        /* キーボード入力を見せないための隠し入力フィールド */
         .hidden-input {
             position: absolute;
             width: 1px;
@@ -103,100 +89,66 @@
             top: -9999px;
             left: -9999px;
             opacity: 0;
-            pointer-events: none; /* フォーカスを当てるために必要、clickイベントで対応 */
+            pointer-events: none;
         }
-
-        /* 奇妙なグリッチエフェクト（エラー風アニメーション） */
-        .glitch {
-            animation: textGlitch 0.3s infinite alternate;
-        }
-
+        
+        /* --- エフェクト用スタイル --- */
+        .glitch { animation: textGlitch 0.3s infinite alternate; }
         @keyframes textGlitch {
-            0% { text-shadow: 0 0 1px #00ff00, 1px -1px 0px #ff00ff; transform: translateX(0px) translateY(0px); }
-            33% { text-shadow: -1px 1px 0px #ff0000, 0 0 1px #00ff00; transform: translateX(2px) translateY(-1px); }
-            66% { text-shadow: 1px 1px 0px #00ffff, -1px -1px 0px #00ff00; transform: translateX(-1px) translateY(2px); }
-            100% { text-shadow: 0 0 1px #00ff00, 1px -1px 0px #ff00ff; transform: translateX(0px) translateY(0px); }
+            0% { text-shadow: 0 0 1px #00ff00, 1px -1px 0px #ff00ff; }
+            100% { text-shadow: 0 0 1px #00ff00, -1px 1px 0px #00ffff; }
         }
+        .error-line { color: #ff3333; font-weight: bold; text-shadow: 0 0 5px #ff0000; }
+        .highlight { color: #ffff00; }
+        .comment { color: #888; }
 
-        /* エラーメッセージ（奇妙な演出） */
-        .error-line {
-            color: #ff3333;
-            font-weight: bold;
-            text-shadow: 0 0 5px #ff0000;
-            animation: errorBlink 1s infinite step-end;
-        }
-
-        @keyframes errorBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* 特定のコマンドに対するスタイル */
-        .highlight {
-            color: #ffff00; /* 黄色 */
-        }
-
-        /* プログラミング風コメント */
-        .comment {
-            color: #888; /* 灰色 */
-        }
-
-        /* --- レスポンシブ対応 --- */
-        /* スマートフォン向け調整 */
+        /* ★★★ 修正点 ★★★ */
+        /* --- スマートフォン向けの表示調整 --- */
         @media (max-width: 768px) {
             body {
-                font-size: 0.9em; /* 小さめのフォントサイズ */
-                align-items: flex-start; /* 画面上部に寄せる */
-                padding-top: 5vh; /* 上部に少し余白 */
+                /* フルスクリーン表示にするため、中央揃えを解除 */
+                display: block;
             }
-
             .terminal-container {
-                width: 95%; /* 横幅を広げる */
-                height: 85vh; /* 縦幅を広げる */
-                padding: 15px; /* パディングを減らす */
-            }
-            
-            /* スマホではカーソルの幅を少し小さく */
-            .cursor {
-                width: 8px; 
+                width: 100%;
+                max-width: 100%;
+                /* dvhはDynamic Viewport Heightの略。
+                  キーボード表示時など、表示領域のサイズが変わると高さが自動で追従する。
+                */
+                height: 100dvh;
+                border: none;
+                box-shadow: none;
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
     <div class="background-grid"></div>
-
     <div class="terminal-container" id="terminal">
-        <div class="output" id="output">
-            <span class="prompt">ACCESS GRANTED.</span><br>
-            <span class="prompt">WELCOME, USER. TYPE 'help' FOR COMMAND LIST.</span><br><br>
-            <span class="prompt">> </span><span id="typed-text"></span><span class="cursor"></span>
-        </div>
-        <input type="text" class="hidden-input" id="hiddenInput" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div id="output"></div>
     </div>
+    <input type="text" class="hidden-input" id="hiddenInput" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
     <script>
-        // 後で編集する情報
+        const terminal = document.getElementById('terminal');
+        const outputDiv = document.getElementById('output');
+        const hiddenInput = document.getElementById('hiddenInput');
+
+        let commandHistory = [];
+        let historyIndex = -1;
+        let currentLanguage = 'ja';
+        let languageSelectionMode = false;
+        let isExiting = false;
+
+        // --- データ定義 ---
         const personalData = {
-            name: {
-                ja: "八百井 陽平",
-                en: "Yohei Yaoi"
-            },
-            age: {
-                ja: "19歳 (システム年齢: 0x13)",
-                en: "19 years old (System Age: 0x13)"
+            name: { ja: "八百井 陽平", en: "Yohei Yaoi" },
+            profile: {
+                ja: "私は、コードとアートの境界を探求する観察者です。未知のシステムを解析し、次元間のデータを収集しています。特に、複雑なロジックと奇妙なインターフェースの構築に情熱を注いでいます。",
+                en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces."
             },
             timeline: {
-                ja: [
-                    "/* 2006年6月7日: 八百井 陽平、この次元に誕生 */",
-                    "// 事象: 存在の歪曲事象発生 (初期記録)",
-                    "// 行動: 情報ストリーム収集開始 (フェーズ1)",
-                    "// 警告: 時空間フロー異常検出 (ステータス: 継続中)",
-                    "/* ログ: 時空転移観測 (日付: 20XX年第3四半期) */",
-                    "// プロジェクト: 自己参照マトリクス構築 (ステータス: 87%完了)",
-                    "// 注記: 外部存在による監視プロセス (優先度: 高)",
-                    "/* 現在のステータス: システム安定性低下、侵入の可能性あり */"
-                ],
                 en: [
                     "/* 2006 June 7: Yohei Yaoi was born into this dimension */",
                     "// EVENT: EXISTENCE_MANIFESTATION_OCCURRED (INITIAL_LOG)",
@@ -208,320 +160,225 @@
                     "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"
                 ]
             },
-            game: {
-                title: "謎の空間探査ゲーム「クロノス・パス」", // あなたのゲームタイトル
-                link: "https://example.com/your-game" // あなたのゲームのリンク
-            },
-            profile: {
-                ja: "私は、コードとアートの境界を探求する観察者です。未知のシステムを解析し、次元間のデータを収集しています。特に、複雑なロジックと奇妙なインターフェースの構築に情熱を注いでいます。",
-                en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces."
-            }
+            game: { title: "謎の空間探査ゲーム「クロノス・パス」", link: "https://example.com/your-game" }
         };
 
-        const terminal = document.getElementById('terminal');
-        const outputDiv = document.getElementById('output');
-        let typedTextSpan = document.getElementById('typed-text');
-        const hiddenInput = document.getElementById('hiddenInput');
-        let outputLines = [];
-        
-        let currentLanguage = 'ja'; // 現在の表示言語 (ja, en)
-        let languageSelectionMode = false; // 言語選択モードかどうかのフラグ
-        let isExiting = false; // 終了処理中かどうかのフラグ
-
-        // コマンドとそれに対応する出力定義 (言語対応)
+        // --- コマンド定義 ---
         const commands = {
             'help': {
-                ja: `
-                <span class="comment">// 利用可能なコマンド:</span>
-                <span class="highlight">help</span>     - コマンドリストを表示
-                <span class="highlight">名前</span>     - ユーザー名を表示
-                <span class="highlight">年齢</span>     - ユーザー年齢を表示
-                <span class="highlight">年表</span>     - 時系列イベントを表示
-                <span class="highlight">ゲーム</span>     - 作成ゲームの情報を表示
-                <span class="highlight">プロファイル</span> - 自己紹介を表示
-                <span class="highlight">言語</span>     - 言語設定を変更 (「言語」と入力後、言語コードを入力)
-                <span class="highlight">クリア</span>   - ターミナル画面をクリア
-                <span class="highlight">終了</span>     - セッションを終了
-                `,
-                en: `
-                <span class="comment">// Available Commands:</span>
-                <span class="highlight">help</span>     - Display command list
-                <span class="highlight">name</span>     - Display user name
-                <span class="highlight">age</span>      - Display user age
-                <span class="highlight">timeline</span> - Show chronological events
-                <span class="highlight">game</span>     - Show info about created games
-                <span class="highlight">profile</span>  - Show personal profile
-                <span class="highlight">language</span> - Change language (type 'language' then a language code)
-                <span class="highlight">clear</span>    - Clear terminal screen
-                <span class="highlight">exit</span>     - Close session
-                `
+                ja: `<span class="comment">// 利用可能なコマンド:</span>
+<span class="highlight">help</span>     - コマンドリストを表示
+<span class="highlight">name</span>     - ユーザー名を表示
+<span class="highlight">profile</span>  - 自己紹介を表示
+<span class="highlight">timeline</span> - 年表を表示
+<span class="highlight">game</span>     - 作成ゲームの情報を表示
+<span class="highlight">language</span> - 言語設定を変更
+<span class="highlight">clear</span>    - 画面をクリア
+<span class="highlight">exit</span>     - セッションを終了`,
+                en: `<span class="comment">// Available Commands:</span>
+<span class="highlight">help</span>     - Display command list
+<span class="highlight">name</span>     - Display user name
+<span class="highlight">profile</span>  - Show personal profile
+<span class="highlight">timeline</span> - Show timeline
+<span class="highlight">game</span>     - Show info about created games
+<span class="highlight">language</span> - Change language setting
+<span class="highlight">clear</span>    - Clear the screen
+<span class="highlight">exit</span>     - Close the session`
             },
             'name': {
-                ja: `
-                <span class="comment">// 名前データを取得中...</span>
-                <span class="glitch">データベース0x01にアクセス中...</span>
-                <span class="output">名前フィールド: '${personalData.name.ja}'</span>
-                <span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>
-                `,
-                en: `
-                <span class="comment">// Retrieving NAME data...</span>
-                <span class="glitch">Accessing_Database_0x01...</span>
-                <span class="output">NAME_FIELD: '${personalData.name.en}'</span>
-                <span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>
-                `
-            },
-            'age': {
-                ja: `
-                <span class="comment">// 年齢モジュールを照会中...</span>
-                <span class="glitch">時間計算処理中...</span>
-                <span class="output">年齢フィールド: '${personalData.age.ja}'</span>
-                <span class="error-line">警告: 時空異常検出 (深刻度: 中)</span>
-                `,
-                en: `
-                <span class="comment">// Querying AGE_MODULE...</span>
-                <span class="glitch">Processing_Temporal_Calculations...</span>
-                <span class="output">AGE_FIELD: '${personalData.age.en}'</span>
-                <span class="error-line">WARNING: TEMPORAL_ANOMALY_DETECTED (SEVERITY: MODERATE)</span>
-                `
-            },
-            'timeline': {
-                ja: `
-                <span class="comment">// 時系列ログを取得中...</span>
-                <span class="glitch">暗号化されたフラグメントを復号中...</span>
-                ${personalData.timeline.ja.map(item => `<span class="output">${item}</span>`).join('\n')}
-                <span class="error-line">致命的エラー: ログフラグメントが見つかりません (ID: F9F9F9)</span>
-                `,
-                en: `
-                <span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>
-                <span class="glitch">Decoding_Encrypted_Fragments...</span>
-                ${personalData.timeline.en.map(item => `<span class="output">${item}</span>`).join('\n')}
-                <span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>
-                `
-            },
-            'game': {
-                ja: `
-                <span class="comment">// ゲーム情報を取得中...</span>
-                <span class="glitch">メタデータを解析中...</span>
-                <span class="output">タイトル: '${personalData.game.title}'</span>
-                <span class="output">リンク: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
-                <span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>
-                `,
-                en: `
-                <span class="comment">// Retrieving GAME data...</span>
-                <span class="glitch">Parsing_Metadata...</span>
-                <span class="output">TITLE: '${personalData.game.title}'</span>
-                <span class="output">LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a></span>
-                <span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>
-                `
+                ja: `<span class="comment">// 名前データを取得中...</span>
+<span class="glitch">データベース0x01にアクセス中...</span>
+名前フィールド: '${personalData.name.ja}'
+<span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>`,
+                en: `<span class="comment">// Retrieving NAME data...</span>
+<span class="glitch">Accessing_Database_0x01...</span>
+NAME_FIELD: '${personalData.name.en}'
+<span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>`
             },
             'profile': {
-                ja: `
-                <span class="comment">// プロファイル情報を取得中...</span>
-                <span class="glitch">個人データキャッシュをスキャン中...</span>
-                <span class="output">${personalData.profile.ja}</span>
-                <span class="error-line">エラー: 認証レベル不足 (CODE: 401)</span>
-                `,
-                en: `
-                <span class="comment">// Retrieving PROFILE data...</span>
-                <span class="glitch">Scanning_Personal_Data_Cache...</span>
-                <span class="output">${personalData.profile.en}</span>
-                <span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>
-                `
+                ja: `<span class="comment">// プロファイル情報を取得中...</span>
+<span class="glitch">個人データキャッシュをスキャン中...</span>
+${personalData.profile.ja}
+<span class="error-line">エラー: 認証レベル不足 (CODE: 401)</span>`,
+                en: `<span class="comment">// Retrieving PROFILE data...</span>
+<span class="glitch">Scanning_Personal_Data_Cache...</span>
+${personalData.profile.en}
+<span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>`
             },
-            'clear': {
-                ja: null, en: null // clearは特別な処理なので出力は不要
+            'timeline': {
+                en: `<span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>
+<span class="glitch">Decoding_Encrypted_Fragments...</span>
+${personalData.timeline.en.join('<br>')}
+<span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>`
             },
+            'game': {
+                ja: `<span class="comment">// ゲーム情報を取得中...</span>
+<span class="glitch">メタデータを解析中...</span>
+タイトル: '${personalData.game.title}'
+リンク: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>
+<span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>`,
+                en: `<span class="comment">// Retrieving GAME data...</span>
+<span class="glitch">Parsing_Metadata...</span>
+TITLE: '${personalData.game.title}'
+LINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>
+<span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>`
+            },
+            'language': {
+                ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English)`,
+                en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English)`
+            },
+            'clear': () => { outputDiv.innerHTML = ''; },
             'exit': {
-                ja: null, en: null // exitは特別な処理なので出力は不要
+                ja: `<span class="error-line">システムシャットダウンを開始します...</span>`,
+                en: `<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`
             }
         };
+        
+        // --- メインロジック ---
 
-        const commandAliases = { // 現在の言語で利用可能なコマンドのエイリアス
-            'ja': { 'help': 'help', '名前': 'name', '年齢': 'age', '年表': 'timeline', 'ゲーム': 'game', 'プロファイル': 'profile', '言語': 'language', 'クリア': 'clear', '終了': 'exit' },
-            'en': { 'help': 'help', 'name': 'name', 'age': 'age', 'timeline': 'timeline', 'game': 'game', 'profile': 'profile', 'language': 'language', 'clear': 'clear', 'exit': 'exit' }
-        };
+        function addLine(htmlContent) {
+            const line = document.createElement('div');
+            line.innerHTML = htmlContent;
+            outputDiv.appendChild(line);
 
-        const languageInitialMessages = {
-            ja: `ACCESS GRANTED.<br>WELCOME, USER. 'help'と入力してください。`,
-            en: `ACCESS GRANTED.<br>WELCOME, USER. TYPE 'help' FOR COMMAND LIST.`
-        };
+            while (outputDiv.scrollHeight > terminal.clientHeight && outputDiv.children.length > 0) {
+                outputDiv.removeChild(outputDiv.firstElementChild);
+            }
+        }
 
-        const languageSelectionMessages = {
-            ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English)`,
-            en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English)`
-        };
+        function promptManager() {
+            let currentPromptLine = null;
+            let typedTextSpan = null;
 
-        const languageErrorMessages = {
-            ja: `エラー: 不明な言語コマンドです。'ja' または 'en' のいずれかを入力してください。`,
-            en: `ERROR: Unknown language command. Please enter 'ja' or 'en'.`
-        };
+            this.newPrompt = function() {
+                if (currentPromptLine) {
+                    currentPromptLine.querySelector('.cursor')?.remove();
+                }
+                const promptHTML = `<span class="prompt">> </span><span class="typed-text"></span><span class="cursor"></span>`;
+                addLine(promptHTML);
+                currentPromptLine = outputDiv.lastElementChild;
+                typedTextSpan = currentPromptLine.querySelector('.typed-text');
+            };
+            
+            this.updateText = function(text) {
+                if(typedTextSpan) {
+                    typedTextSpan.textContent = text;
+                }
+            };
+            
+            this.finalize = function(command) {
+                if (currentPromptLine) {
+                     currentPromptLine.innerHTML = `<span class="prompt">> </span>${command}`;
+                }
+            }
+        }
 
+        const prompt = new promptManager();
 
-        // 初期フォーカス設定
-        hiddenInput.focus();
-
-        // hiddenInputの値が変更されたときに typedTextSpan を更新する
         hiddenInput.addEventListener('input', () => {
-            if (isExiting) return; // 終了処理中は入力表示を更新しない
-
-            typedTextSpan = document.getElementById('typed-text'); // 常に最新の要素を取得
-            if (typedTextSpan) {
-                typedTextSpan.textContent = hiddenInput.value;
-            }
-            // タイプ時に自動スクロールしないように、ここではscrollToBottomを呼び出さない
-            // 代わりに、入力中の行が見えるようにする処理を mobileAdjustView に集約
-            mobileAdjustView(); 
+            if (isExiting) return;
+            prompt.updateText(hiddenInput.value);
         });
 
-        // Enterキーが押されたときの処理 (PC/スマホ共通)
         hiddenInput.addEventListener('keydown', (e) => {
-            if (isExiting) { // 終了処理中はEnterキーを無効にする
+            if (isExiting) {
                 e.preventDefault();
                 return;
             }
 
             if (e.key === 'Enter') {
-                e.preventDefault(); // デフォルトの改行動作を防ぐ
-                const fullCommand = hiddenInput.value.trim(); // 入力されたコマンド全体
-                processCommand(fullCommand);
-                hiddenInput.value = ''; // 入力フィールドをクリア
-                scrollToBottom(); // コマンド実行後に一番下へスクロール
+                e.preventDefault();
+                const command = hiddenInput.value.trim();
+
+                if(command) {
+                    commandHistory.unshift(command);
+                    historyIndex = -1;
+                }
+
+                prompt.finalize(command);
+                processCommand(command);
+                
+                if (!isExiting) {
+                    prompt.newPrompt();
+                    hiddenInput.value = '';
+                    prompt.updateText('');
+                }
+
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if(historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    hiddenInput.value = commandHistory[historyIndex];
+                    prompt.updateText(hiddenInput.value);
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                 if(historyIndex > 0) {
+                    historyIndex--;
+                    hiddenInput.value = commandHistory[historyIndex];
+                    prompt.updateText(hiddenInput.value);
+                } else {
+                    historyIndex = -1;
+                    hiddenInput.value = '';
+                    prompt.updateText('');
+                }
             }
         });
+        
+        function processCommand(command) {
+            const cmdLower = command.toLowerCase();
 
-        // コマンド処理
-        function processCommand(fullCommand) {
-            outputLines.push(`<span class="prompt">> ${fullCommand}</span>`); // 実行されたコマンドを履歴に追加
-
-            const parts = fullCommand.split(' ');
-            let commandInput = parts[0].toLowerCase(); // 入力されたコマンドの最初の部分
-            let actualCommand = null; // 実際のコマンド名を保持する変数
-
-            // 言語選択モードの処理
             if (languageSelectionMode) {
-                if (['ja', 'en'].includes(commandInput)) { // 対応言語を ja, en に変更
-                    currentLanguage = commandInput;
-                    languageSelectionMode = false; // モード終了
-                    outputLines.push(`<span class="comment">// 言語設定を '${commandInput}' に変更しました。</span>`);
-                    outputLines.push(languageInitialMessages[currentLanguage].replace('<br>',' ')); // 新しい言語でヒントを表示
+                if (cmdLower === 'ja' || cmdLower === 'en') {
+                    currentLanguage = cmdLower;
+                    addLine(`<span class="comment">// Language set to ${cmdLower}.</span>`);
                 } else {
-                    outputLines.push(`<span class="error-line">${languageErrorMessages[currentLanguage]}</span>`);
+                    addLine(`<span class="error-line">ERROR: Unknown language code.</span>`);
                 }
-            } else {
-                // 通常モードの処理
-                actualCommand = commandAliases[currentLanguage][commandInput]; // エイリアスから実際のコマンド名を取得
-
-                if (actualCommand === 'language') {
-                    languageSelectionMode = true; // 言語選択モードに入る
-                    outputLines.push(languageSelectionMessages[currentLanguage]);
-                } else if (commands[actualCommand] && commands[actualCommand][currentLanguage]) {
-                    // 通常のコマンド処理
-                    outputLines.push(commands[actualCommand][currentLanguage]);
-                } else {
-                    // コマンドが見つからない場合
-                    outputLines.push(`<span class="error-line">ERROR: COMMAND NOT FOUND: '${fullCommand}'</span>`);
-                    outputLines.push(`<span class="comment">// '${commandAliases[currentLanguage]['help']}'と入力して利用可能なコマンドを確認してください。</span>`);
-                }
-            }
-
-            // 'clear' および 'exit' コマンドの特別処理
-            if (actualCommand === 'clear') { 
-                outputLines = []; // 画面クリア
-                // クリア後の初期メッセージを再表示 (現在の言語で)
-                outputLines.push(languageInitialMessages[currentLanguage]);
-                // clearした場合は一番上から始まるので、ここでscrollToBottomを呼び出す
-                scrollToBottom(); 
-            } else if (actualCommand === 'exit') {
-                isExiting = true; // 終了処理中フラグを立てる
-                outputLines.push(`<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>`);
-                updateTerminalDisplay(); // 終了メッセージを表示
-                hiddenInput.blur(); // hiddenInputからフォーカスを外す
-                setTimeout(() => location.reload(), 2000); // 2秒後にページをリロードして終了
-                return; // exitコマンドの場合はこれ以上処理しない
-            }
-
-            updateTerminalDisplay();
-        }
-
-        // ターミナル表示の更新
-        function updateTerminalDisplay() {
-            // これまでの履歴と現在の入力行を結合して表示
-            outputDiv.innerHTML = outputLines.join('<br>') + `<br><span class="prompt">> </span><span id="typed-text"></span><span class="cursor"></span>`;
-            
-            // typedTextSpanを再取得 (DOMが更新されたため、常に最新の要素に紐づける)
-            typedTextSpan = document.getElementById('typed-text'); 
-            
-            // スクロールは、inputイベントでは行わず、Enterキー時とClear時にのみ実行
-            // モバイルキーボードの調整は別途 mobileAdjustView で対応
-        }
-
-        // 自動スクロール
-        function scrollToBottom() {
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        // スマホでのキーボード表示時に入力行を適切に表示する関数
-        function mobileAdjustView() {
-            // PCの場合は何もしない
-            if (window.innerWidth > 768) {
+                languageSelectionMode = false;
                 return;
             }
 
-            // typedTextSpanの親要素（.output内の一番最後の行）を取得
-            const lastLine = typedTextSpan.parentNode;
-            if (!lastLine) return;
+            const commandDef = commands[cmdLower];
+            let output = '';
 
-            // typedTextSpanがターミナルコンテナのどこにあるか計算
-            const terminalRect = terminal.getBoundingClientRect();
-            const lastLineRect = lastLine.getBoundingClientRect();
+            if (typeof commandDef === 'function') {
+                commandDef();
+                return;
+            } else if (commandDef) {
+                if (cmdLower === 'timeline') {
+                    output = commandDef['en'];
+                } else {
+                    output = commandDef[currentLanguage] || commandDef['en'] || commandDef;
+                }
+            } else if (command !== '') {
+                output = `<span class="error-line">COMMAND NOT FOUND: ${command}</span>`;
+            }
 
-            // lastLineのターミナルコンテナ内での相対位置
-            const relativeBottom = lastLineRect.bottom - terminalRect.top;
-            const relativeTop = lastLineRect.top - terminalRect.top;
+            if (output) {
+                addLine(output);
+            }
 
-            // ターミナルコンテナの表示領域（キーボードを考慮）
-            // window.innerHeight がキーボード表示で変化する可能性があるので、
-            // keyboardHeight を動的に計算する方が望ましいが、ここでは簡易的に固定
-            // もしくは、hiddenInput.getBoundingClientRect().bottom - window.innerHeight
-            // といった方法でキーボードの高さを推定することも可能だが、複雑になるため、
-            // 最後の行がビューポートの下部に見えるように調整する
-            const viewportHeight = window.innerHeight;
-            const currentScrollTop = terminal.scrollTop;
+            if (cmdLower === 'language') {
+                languageSelectionMode = true;
+            }
 
-            // もし入力行がビューポートの下部（キーボードがあるであろう場所）で見切れていたらスクロール
-            // (キーボードの高さを仮に200pxとして計算。環境によって調整が必要)
-            const keyboardEstimateHeight = Math.min(window.innerHeight * 0.4, 300); // ビューポートの最大40%、最大300px
-            const visibleTerminalBottom = terminalRect.height; // ターミナルコンテナ自体の高さ
-
-            if (relativeBottom > visibleTerminalBottom - keyboardEstimateHeight) {
-                // 入力行がキーボードで隠れる可能性がある場合、その行が表示されるようにスクロール
-                terminal.scrollTop = currentScrollTop + (relativeBottom - (visibleTerminalBottom - keyboardEstimateHeight));
-            } else if (relativeTop < 0) {
-                // 入力行が上に見切れている場合（稀だが念のため）
-                terminal.scrollTop = currentScrollTop + relativeTop;
+            if (cmdLower === 'exit') {
+                isExiting = true;
+                hiddenInput.blur();
+                setTimeout(() => location.reload(), 2000);
             }
         }
-
-
-        // ページロード時に隠しinputにフォーカス
-        window.addEventListener('load', () => {
-            hiddenInput.focus();
-            // 初期メッセージをセット
-            outputLines.push(languageInitialMessages[currentLanguage]);
-            updateTerminalDisplay();
-            scrollToBottom(); // 初期表示時もスクロール
-        });
-
-        // どこをクリックしても隠しinputにフォーカス
-        document.addEventListener('click', () => {
-            if (!isExiting) { // 終了処理中でない場合のみフォーカスする
+        
+        document.body.addEventListener('click', () => {
+            if (!isExiting) {
                 hiddenInput.focus();
             }
         });
-        
-        // windowのリサイズイベント（スマホでのキーボード表示/非表示もトリガーになる）
-        window.addEventListener('resize', mobileAdjustView);
-        
+
+        // 初期表示
+        addLine("SYSTEM BOOT COMPLETE. TYPE 'help' FOR COMMANDS.");
+        prompt.newPrompt();
     </script>
 </body>
 </html>
