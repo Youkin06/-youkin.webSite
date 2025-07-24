@@ -24,6 +24,7 @@
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 1.1em;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -32,6 +33,27 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+        }
+        
+        #ascii-art-title {
+            color: var(--main-color);
+            text-shadow: 0 0 5px var(--shadow-color);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.1;
+            font-size: 0.8vw;
+            margin-bottom: 1.5rem;
+            white-space: pre;
+        }
+        
+        @media (max-width: 768px) {
+            #ascii-art-title {
+                font-size: 7px;
+            }
+        }
+        @media (min-width: 1400px) {
+            #ascii-art-title {
+                font-size: 11px;
+            }
         }
 
         .background-grid {
@@ -48,10 +70,36 @@
             z-index: 0;
         }
 
-        .terminal-container {
+        .terminal-wrapper {
+            position: relative;
             width: 90%;
             max-width: 900px;
-            height: 80vh;
+        }
+        
+        #moving-face {
+            position: absolute;
+            top: -1.3em;
+            color: var(--main-color);
+            text-shadow: 0 0 5px var(--shadow-color);
+            white-space: nowrap;
+            z-index: 10;
+            animation: move-across 10s linear infinite;
+        }
+
+        @keyframes move-across {
+            0%, 100% {
+                left: 0;
+                transform: translateX(0%);
+            }
+            50% {
+                left: 100%;
+                transform: translateX(-100%);
+            }
+        }
+
+        .terminal-container {
+            width: 100%;
+            height: 70vh; 
             background-color: rgba(0, 0, 0, 0.8);
             border: 2px solid var(--border-color);
             box-shadow: 0 0 15px var(--shadow-color);
@@ -102,7 +150,56 @@
         .highlight { color: var(--highlight-color); }
         .comment { color: var(--comment-color); }
         
-        .theme-red {
+        .game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: #000;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 0 15px var(--shadow-color);
+            z-index: 20;
+            overflow: hidden;
+            color: var(--main-color);
+            font-size: 1.5em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .player {
+            position: absolute;
+            bottom: 10px;
+            transition: left 0.1s linear;
+        }
+
+        .enemy {
+            position: absolute;
+            top: -30px;
+            white-space: nowrap;
+        }
+
+        .score-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 21;
+        }
+        
+        .game-over-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        body.theme-red {
             --main-color: #ff4141;
             --border-color: #cc2222;
             --shadow-color: rgba(255, 50, 50, 0.7);
@@ -112,7 +209,7 @@
             --error-shadow-color: #ff0000;
             --comment-color: #aaa;
         }
-        .theme-blue {
+        body.theme-blue {
             --main-color: #00aaff;
             --border-color: #0088cc;
             --shadow-color: rgba(0, 170, 255, 0.7);
@@ -123,23 +220,39 @@
             --comment-color: #aaa;
         }
         
-        .theme-rainbow {
-            --border-color: transparent;
+        body.theme-rainbow .terminal-container,
+        body.theme-rainbow .game-container {
             border-image: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3) 1;
             animation: rainbow-flow 4s linear infinite;
         }
-        .theme-rainbow .prompt,
-        .theme-rainbow .typed-text,
-        .theme-rainbow #output-container *,
-        .theme-rainbow .cursor {
+
+        /* --- 修正箇所 --- */
+        /* move-across アニメーションを汎用セレクターから削除 */
+        body.theme-rainbow #ascii-art-title,
+        body.theme-rainbow .prompt,
+        body.theme-rainbow .typed-text,
+        body.theme-rainbow #output-container *,
+        body.theme-rainbow .cursor,
+        body.theme-rainbow .game-container * {
             background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent !important;
-            animation: rainbow-flow 4s linear infinite;
+            animation: rainbow-flow 4s linear infinite; /* 虹色スクロールのアニメーションのみ適用 */
             background-size: 200% 100%;
         }
-        .theme-rainbow .cursor {
+        
+        /* 顔文字には虹色スクロールと左右の動き、両方のアニメーションを適用 */
+        body.theme-rainbow #moving-face {
+           background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+           -webkit-background-clip: text;
+           background-clip: text;
+           color: transparent !important;
+           background-size: 200% 100%;
+           animation: rainbow-flow 4s linear infinite, move-across 10s linear infinite;
+        }
+        
+        body.theme-rainbow .cursor {
             -webkit-background-clip: border-box;
             background-clip: border-box;
             color: #0000;
@@ -149,17 +262,46 @@
         }
 
         @media (max-width: 768px) {
-            body { display: block; }
-            .terminal-container { width: 100%; max-width: 100%; height: 100dvh; /*border: none; box-shadow: none; */ padding: 10px; }
+            body { 
+                display: block; 
+                padding: 10px;
+                box-sizing: border-box;
+            }
+            .terminal-wrapper,
+            .game-container {
+                width: 100%;
+            }
+            .terminal-container { 
+                width: 100%; 
+                max-width: 100%; 
+                height: 100%;
+                padding: 10px; 
+            }
         }
     </style>
 </head>
 <body>
+    <div id="ascii-art-title"> 
+ __ __   ___   __ __  __  _  ____  ____       __    __    ___  ____  
+|  |  | /   \ |  |  ||  |/ ]|    ||    \      |  |__|  |  /  _]|    \ 
+|  |  ||     ||  |  ||  ' /  |  | |  _  |     |  |  |  | /  [_ |  o  )
+|  ~  ||  O  ||  |  ||    \  |  | |  |  |     |  |  |  | |    _]|    |
+|___, ||     ||  :  ||     | |  | |  |  |     |  `  '  ||  [_ |  O  |
+|     ||     ||     ||  .  | |  | |  |  |      \      / |    ||     |
+|____/  \___/  \__,_||__|\_||____||__|__|       \_/\_/  |_____||_____|</div>
+
     <div class="background-grid"></div>
-    <div class="terminal-container" id="terminal">
-        <div id="prompt-container"></div>
-        <div id="output-container"></div>
+
+    <div class="terminal-wrapper">
+        <div id="moving-face">(￣▽￣)</div>
+
+        <div class="terminal-container" id="terminal">
+            <div id="prompt-container"></div>
+            <div id="output-container"></div>
+        </div>
+        <div id="game-container" class="game-container hidden"></div>
     </div>
+    
     <input type="text" class="hidden-input" id="hiddenInput" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
     <script>
@@ -174,14 +316,23 @@
         let languageSelectionMode = false;
         let colorSelectionMode = false;
         let isExiting = false;
+        let passwordMode = false;
+        let gameActive = false;
 
         const personalData = { name: { ja: "八百井 陽平", en: "Yohei Yaoi" }, profile: { ja: "私は、コードとアートの境界を探求する観察者です。未知のシステムを解析し、次元間のデータを収集しています。特に、複雑なロジックと奇妙なインターフェースの構築に情熱を注いでいます。", en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces." }, timeline: { ja: ["/* 2006年6月7日: 八百井 陽平、この次元に誕生 */", "// 事象: 存在の歪曲事象発生 (初期記録)", "// 行動: 情報ストリーム収集開始 (フェーズ1)", "// 警告: 時空間フロー異常検出 (ステータス: 継続中)", "/* ログ: 時空転移観測 (日付: 20XX年第3四半期) */", "// プロジェクト: 自己参照マトリクス構築 (ステータス: 87%完了)", "// 注記: 外部存在による監視プロセス (優先度: 高)", "/* 現在のステータス: システム安定性低下、侵入の可能性あり */"], en: ["/* 2006 June 7: Yohei Yaoi was born into this dimension */", "// EVENT: EXISTENCE_MANIFESTATION_OCCURRED (INITIAL_LOG)", "// ACTION: DATA_STREAM_COLLECTION_INITIATED (PHASE_1)", "// ALERT: ANOMALY_DETECTED_IN_TIME_FLOW (STATUS: ONGOING)", "/* LOG: TEMPORAL_SHIFT_OBSERVED (DATE: 20XX_Q3) */", "// PROJECT: SELF_REFERENCE_MATRIX_CONSTRUCTION (STATUS: 87% COMPLETE)", "// NOTE: EXTERNAL_ENTITIES_MONITORING_PROCESS (HIGH_PRIORITY)", "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"] }, game: { title: "謎の空間探査ゲーム「クロノス・パス」", link: "https://example.com/your-game" } };
-
+        
         const commands = {
-            'help': { ja: `<span class="comment">// 利用可能なコマンド:</span>\n<span class="highlight">help</span>     - コマンドリストを表示\n<span class="highlight">name</span>     - ユーザー名を表示\n<span class="highlight">profile</span>  - 自己紹介を表示\n<span class="highlight">timeline</span> - 年表を表示\n<span class="highlight">game</span>     - 作成ゲームの情報を表示\n<span class="highlight">language</span> - 言語設定を変更\n<span class="highlight">color</span>    - テーマカラーを変更\n<span class="highlight">clear</span>    - 画面をクリア\n<span class="highlight">exit</span>     - セッションを終了`, en: `<span class="comment">// Available Commands:</span>\n<span class="highlight">help</span>     - Display command list\n<span class="highlight">name</span>     - Display user name\n<span class="highlight">profile</span>  - Show personal profile\n<span class="highlight">timeline</span> - Show timeline\n<span class="highlight">game</span>     - Show info about created games\n<span class="highlight">language</span> - Change language setting\n<span class="highlight">color</span>    - Change theme color\n<span class="highlight">clear</span>    - Clear the screen\n<span class="highlight">exit</span>     - Close the session` },
+            'help': { ja: `<span class="comment">// 利用可能なコマンド:</span>\n<span class="highlight">help</span>     - コマンドリストを表示\n<span class="highlight">name</span>     - ユーザー名を表示\n<span class="highlight">profile</span>  - 自己紹介を表示\n<span class="highlight">timeline</span> - 年表を表示\n<span class="highlight">game</span>     - 作成ゲームの情報を表示\n<span class="highlight">play</span>     - ミニゲームをプレイ (操作: スペースキー or クリック)\n<span class="highlight">language</span> - 言語設定を変更\n<span class="highlight">color</span>    - テーマカラーを変更\n<span class="highlight">clear</span>    - 画面をクリア\n<span class="highlight">exit</span>     - セッションを終了`, en: `<span class="comment">// Available Commands:</span>\n<span class="highlight">help</span>     - Display command list\n<span class="highlight">name</span>     - Display user name\n<span class="highlight">profile</span>  - Show personal profile\n<span class="highlight">timeline</span> - Show timeline\n<span class="highlight">game</span>     - Show info about created games\n<span class="highlight">play</span>     - Play a mini-game (Controls: Spacebar or Click)\n<span class="highlight">language</span> - Change language setting\n<span class="highlight">color</span>    - Change theme color\n<span class="highlight">clear</span>    - Clear the screen\n<span class="highlight">exit</span>     - Close the session` },
             'name': { ja: `<span class="comment">// 名前データを取得中...</span>\n<span class="glitch">データベース0x01にアクセス中...</span>\n名前フィールド: '${personalData.name.ja}'\n<span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>`, en: `<span class="comment">// Retrieving NAME data...</span>\n<span class="glitch">Accessing_Database_0x01...</span>\nNAME_FIELD: '${personalData.name.en}'\n<span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>` },
             'profile': { ja: `<span class="comment">// プロファイル情報を取得中...</span>\n<span class="glitch">個人データキャッシュをスキャン中...</span>\n${personalData.profile.ja}\n<span class="error-line">エラー: 認証レベル不足 (CODE: 401)</span>`, en: `<span class="comment">// Retrieving PROFILE data...</span>\n<span class="glitch">Scanning_Personal_Data_Cache...</span>\n${personalData.profile.en}\n<span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>` },
-            'timeline': { ja: `<span class="comment">// 時系列ログを取得中...</span>\n<span class="glitch">暗号化されたフラグメントを復号中...</span>\n${personalData.timeline.ja.join('<br>')}\n<span class="error-line">致命的エラー: ログフラグメントが見つかりません (ID: F9F9F9)</span>`, en: `<span class="comment">// Fetching CHRONOLOGICAL_LOGS...</span>\n<span class="glitch">Decoding_Encrypted_Fragments...</span>\n${personalData.timeline.en.join('<br>')}\n<span class="error-line">CRITICAL_ERROR: LOG_FRAGMENT_MISSING (ID: F9F9F9)</span>` },
+            'timeline': () => {
+                passwordMode = true;
+                const prompts = {
+                    ja: `<span class="comment">// アクセスにはパスワードが必要です。</span>\n<span class="highlight">パスワードを入力してください:</span>\n<span class="comment">ヒント: ヨウキンの好きな食べ物</span>`,
+                    en: `<span class="comment">// Password required for access.</span>\n<span class="highlight">Enter password:</span>\n<span class="comment">Hint: Youkin's favorite food</span>`
+                };
+                return prompts[currentLanguage];
+            },
             'game': { ja: `<span class="comment">// ゲーム情報を取得中...</span>\n<span class="glitch">メタデータを解析中...</span>\nタイトル: '${personalData.game.title}'\nリンク: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>\n<span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>`, en: `<span class="comment">// Retrieving GAME data...</span>\n<span class="glitch">Parsing_Metadata...</span>\nTITLE: '${personalData.game.title}'\nLINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>\n<span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>` },
             'language': { ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English)`, en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English)` },
             'clear': () => { outputContainer.innerHTML = ''; },
@@ -191,28 +342,14 @@
                 const prompts = { ja: `<span class="comment">// 利用可能なカラーテーマを指定してください:</span>\n<span class="highlight">green / red / blue / rainbow</span>`, en: `<span class="comment">// Please specify an available color theme:</span>\n<span class="highlight">green / red / blue / rainbow</span>` };
                 return prompts[currentLanguage];
             },
-            
+            'play': () => {
+                outputContainer.innerHTML = '';
+                promptContainer.style.display = 'none';
+                startGame();
+                return '';
+            }
         };
         
-        function setTheme(theme) { /* ... */ }
-        function addOutputLine(htmlContent) { /* ... */ }
-        function scrollToTop() { /* ... */ }
-
-        function setTheme(theme) {
-            const validThemes = ['green', 'red', 'blue', 'rainbow'];
-            if (validThemes.includes(theme)) {
-                terminal.className = 'terminal-container';
-                if (theme !== 'green') {
-                    terminal.classList.add(`theme-${theme}`);
-                }
-                const responses = { ja: `<span class="comment">// テーマカラーを ${theme} に変更しました</span>`, en: `<span class="comment">// Theme changed to ${theme}</span>` };
-                return responses[currentLanguage];
-            } else {
-                const errorMsgs = { ja: `<span class="error-line">エラー: 不明なテーマ '${theme}'</span>`, en: `<span class="error-line">ERROR: Unknown theme '${theme}'</span>` };
-                return errorMsgs[currentLanguage];
-            }
-        }
-
         function addOutputLine(htmlContent) {
             const line = document.createElement('div');
             line.innerHTML = htmlContent;
@@ -222,14 +359,26 @@
         function scrollToTop() {
             terminal.scrollTop = 0;
         }
+
+        function setTheme(theme) {
+            const validThemes = ['green', 'red', 'blue', 'rainbow'];
+            if (validThemes.includes(theme)) {
+                document.body.className = ''; 
+                if (theme !== 'green') {
+                    document.body.classList.add(`theme-${theme}`);
+                }
+                const responses = { ja: `<span class="comment">// テーマカラーを ${theme} に変更しました</span>`, en: `<span class="comment">// Theme changed to ${theme}</span>` };
+                return responses[currentLanguage];
+            } else {
+                const errorMsgs = { ja: `<span class="error-line">エラー: 不明なテーマ '${theme}'</span>`, en: `<span class="error-line">ERROR: Unknown theme '${theme}'</span>` };
+                return errorMsgs[currentLanguage];
+            }
+        }
         
-        // ★★★ 修正点 ★★★
-        // プロンプトの初期化と入力ハンドラを修正
         promptContainer.innerHTML = `<span class="prompt">> </span><span class="typed-text"></span><span class="cursor"></span>`;
         
         hiddenInput.addEventListener('input', (e) => {
-            if (isExiting) return;
-            // 毎回入力欄を探して更新する
+            if (isExiting || gameActive) return;
             const typedTextSpan = promptContainer.querySelector('.typed-text');
             if(typedTextSpan) {
                 typedTextSpan.textContent = hiddenInput.value;
@@ -237,11 +386,10 @@
         });
 
         hiddenInput.addEventListener('keydown', (e) => {
-            if (isExiting) { e.preventDefault(); return; }
+            if (isExiting || gameActive) { e.preventDefault(); return; }
 
-            // 毎回入力欄を探して更新する
             const typedTextSpan = promptContainer.querySelector('.typed-text');
-            if (!typedTextSpan) return; // 安全策
+            if (!typedTextSpan) return;
 
             const keyAction = {
                 'Enter': () => {
@@ -259,26 +407,8 @@
                     typedTextSpan.textContent = '';
                     scrollToTop();
                 },
-                'ArrowUp': () => { 
-                    e.preventDefault(); 
-                    if(historyIndex < commandHistory.length - 1) { 
-                        historyIndex++; 
-                        hiddenInput.value = commandHistory[historyIndex]; 
-                        typedTextSpan.textContent = hiddenInput.value; 
-                    } 
-                },
-                'ArrowDown': () => { 
-                    e.preventDefault(); 
-                    if(historyIndex > 0) { 
-                        historyIndex--; 
-                        hiddenInput.value = commandHistory[historyIndex]; 
-                        typedTextSpan.textContent = hiddenInput.value; 
-                    } else { 
-                        historyIndex = -1; 
-                        hiddenInput.value = ''; 
-                        typedTextSpan.textContent = ''; 
-                    } 
-                }
+                'ArrowUp': () => { e.preventDefault(); if(historyIndex < commandHistory.length - 1) { historyIndex++; hiddenInput.value = commandHistory[historyIndex]; typedTextSpan.textContent = hiddenInput.value; } },
+                'ArrowDown': () => { e.preventDefault(); if(historyIndex > 0) { historyIndex--; hiddenInput.value = commandHistory[historyIndex]; typedTextSpan.textContent = hiddenInput.value; } else { historyIndex = -1; hiddenInput.value = ''; typedTextSpan.textContent = ''; } }
             };
             if (keyAction[e.key]) keyAction[e.key]();
         });
@@ -286,19 +416,18 @@
         function processCommand(command, args) {
             const cmdLower = command.toLowerCase();
 
-            if (languageSelectionMode) {
-                if (cmdLower === 'ja' || cmdLower === 'en') {
-                    currentLanguage = cmdLower;
-                    const msg = cmdLower === 'en' ? `// Language set to English.` : `// 言語を日本語に設定しました。`;
-                    addOutputLine(`<span class="comment">${msg}</span>`);
+            if (passwordMode) {
+                const validPasswords = ["とんかつ", "トンカツ", "tonkatu", "tonkatsu"];
+                if (validPasswords.includes(cmdLower)) {
+                    const timelineContent = { ja: `<span class="comment">// 時系列ログ...</span>\n${personalData.timeline.ja.join('<br>')}`, en: `<span class="comment">// Chronological logs...</span>\n${personalData.timeline.en.join('<br>')}`};
+                    addOutputLine(`<span class="highlight">// ACCESS GRANTED</span><br>` + timelineContent[currentLanguage]);
                 } else {
-                    const msg = currentLanguage === 'en' ? `ERROR: Unknown language code '${cmdLower}'.` : `エラー: 不明な言語コード '${cmdLower}'。`;
-                    addOutputLine(`<span class="error-line">${msg}</span>`);
+                    addOutputLine(`<span class="error-line">ACCESS DENIED - INCORRECT PASSWORD</span>`);
                 }
-                languageSelectionMode = false;
+                passwordMode = false;
                 return;
             }
-
+            
             if (colorSelectionMode) {
                 const output = setTheme(cmdLower);
                 addOutputLine(output);
@@ -306,32 +435,129 @@
                 return;
             }
 
+            if (languageSelectionMode) {
+                if (cmdLower === 'ja' || cmdLower === 'en') {
+                    currentLanguage = cmdLower;
+                    const response = { ja: "// 言語を日本語に変更しました", en: "// Language changed to English" };
+                    addOutputLine(`<span class="comment">${response[currentLanguage]}</span>`);
+                } else {
+                    const errorMsg = { ja: `エラー: 不明な言語 '${cmdLower}'`, en: `ERROR: Unknown language '${cmdLower}'` };
+                    addOutputLine(`<span class="error-line">${errorMsg[currentLanguage]}</span>`);
+                }
+                languageSelectionMode = false;
+                return;
+            }
+
             const commandDef = commands[cmdLower];
             let output = '';
 
-            if (!commandDef) {
-                if (command) output = `<span class="error-line">COMMAND NOT FOUND: ${command}</span>`;
-            } else if (typeof commandDef === 'function') {
-                const result = commandDef(args);
-                if (result) output = result;
-            } else if (typeof commandDef === 'object') {
-                output = commandDef[currentLanguage] || commandDef.en;
-            }
+            if (!commandDef) { if (command) output = `<span class="error-line">COMMAND NOT FOUND: ${command}</span>`; }
+            else if (typeof commandDef === 'function') { const result = commandDef(args); if (result) output = result; }
+            else if (typeof commandDef === 'object') { output = commandDef[currentLanguage] || commandDef.en; }
 
-            if (output) addOutputLine(output);
+            if (output) { addOutputLine(output); }
+
             if (cmdLower === 'language') languageSelectionMode = true;
-            if (cmdLower === 'exit') {
-                isExiting = true;
-                hiddenInput.blur();
-                setTimeout(() => location.reload(), 2000);
-            }
+            if (cmdLower === 'timeline') passwordMode = true;
+            if (cmdLower === 'color') colorSelectionMode = true;
+            if (cmdLower === 'exit') { isExiting = true; hiddenInput.blur(); setTimeout(() => location.reload(), 2000); }
         }
         
         document.body.addEventListener('click', () => {
-            if (!isExiting) hiddenInput.focus();
+            if (!isExiting && !gameActive) hiddenInput.focus();
         });
 
         addOutputLine("SYSTEM BOOT COMPLETE. TYPE 'help' FOR COMMANDS. \nシステム起動完了。コマンドを確認するには「help」と入力してください。");
+
+        const gameContainer = document.getElementById('game-container');
+        let player, enemies, score, scoreDisplay, gameLoopInterval, enemySpawnInterval;
+        const enemyChars = ['(*^^*)', '(｀・ω・´)', '( ◜ω◝ )'];
+
+        function startGame() {
+            gameActive = true;
+            gameContainer.innerHTML = '';
+            gameContainer.classList.remove('hidden');
+
+            player = document.createElement('div');
+            player.textContent = '(￣▽￣)';
+            player.className = 'player';
+            player.dataset.lane = 'left';
+            player.style.left = '25%';
+            gameContainer.appendChild(player);
+
+            score = 0;
+            scoreDisplay = document.createElement('div');
+            scoreDisplay.className = 'score-display';
+            scoreDisplay.textContent = 'SCORE: 0';
+            gameContainer.appendChild(scoreDisplay);
+
+            enemies = [];
+            gameLoopInterval = setInterval(gameLoop, 50);
+            enemySpawnInterval = setInterval(spawnEnemy, 900);
+
+            document.addEventListener('keydown', handleGameInput);
+            gameContainer.addEventListener('click', handleGameInput);
+        }
+
+        function handleGameInput(e) {
+            if (!gameActive) return;
+            if (e.type === 'click' || (e.type === 'keydown' && e.code === 'Space')) {
+                player.dataset.lane = (player.dataset.lane === 'left') ? 'right' : 'left';
+                player.style.left = (player.dataset.lane === 'left') ? '25%' : '75%';
+            }
+        }
+
+        function spawnEnemy() {
+            const enemy = document.createElement('div');
+            enemy.textContent = enemyChars[Math.floor(Math.random() * enemyChars.length)];
+            enemy.className = 'enemy';
+            const lane = Math.random() < 0.5 ? 'left' : 'right';
+            enemy.style.left = lane === 'left' ? '25%' : '75%';
+            enemy.dataset.lane = lane;
+            
+            gameContainer.appendChild(enemy);
+            enemies.push(enemy);
+        }
+
+        function gameLoop() {
+            enemies.forEach(enemy => {
+                const currentTop = parseInt(enemy.style.top || 0);
+                enemy.style.top = (currentTop + 5) + 'px';
+
+                if (currentTop > gameContainer.offsetHeight - 60 && currentTop < gameContainer.offsetHeight - 20) {
+                    if (enemy.dataset.lane === player.dataset.lane) {
+                        endGame();
+                    }
+                }
+                
+                if (currentTop > gameContainer.offsetHeight) {
+                    enemy.remove();
+                    enemies = enemies.filter(e => e !== enemy);
+                    score += 10;
+                    scoreDisplay.textContent = 'SCORE: ' + score;
+                }
+            });
+        }
+        
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameLoopInterval);
+            clearInterval(enemySpawnInterval);
+            document.removeEventListener('keydown', handleGameInput);
+            gameContainer.removeEventListener('click', handleGameInput);
+
+            const gameOverText = document.createElement('div');
+            gameOverText.className = 'game-over-text';
+            gameOverText.innerHTML = `GAME OVER<br>FINAL SCORE: ${score}`;
+            gameContainer.appendChild(gameOverText);
+
+            setTimeout(() => {
+                gameContainer.classList.add('hidden');
+                promptContainer.style.display = 'block';
+                addOutputLine(`<span class="comment">// GAME SESSION ENDED. FINAL SCORE: ${score}</span>`);
+                hiddenInput.focus();
+            }, 2000);
+        }
     </script>
 </body>
-</html>
+</html> 
