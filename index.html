@@ -279,13 +279,13 @@
 </head>
 <body>
     <div id="ascii-art-title"> 
- __ __   ___   __ __  __  _  ____  ____         __    __    ___  ____  
-|  |  | /   \ |  |  ||  |/ ]|    ||    \        |  |__|  |  /  _]|    \ 
-|  |  ||     ||  |  ||  ' /  |  | |  _  |        |  |  |  | /  [_ |  o  )
-|  ~  ||  O  ||  |  ||    \  |  | |  |  |        |  |  |  | |    _]|    |
-|___, ||     ||  :  ||     | |  | |  |  |        |  `  '  ||  [_ |  O  |
-|     ||     ||     ||  .  | |  | |  |  |         \      / |    ||     |
-|____/  \___/  \__,_||__|\_||____||__|__|          \_/\_/  |_____||_____|</div>
+ __ __   ___   __ __  __  _  ____  ____           __    __   ____  _____ 
+|  |  | /   \ |  |  ||  |/ ]|    ||    \         |  |__|  | |   _]|     \ 
+|  |  ||     ||  |  ||  ' /  |  | |  _  |        |  |  |  ||  [_  |  o  _)
+|  ~  ||  O  ||  |  ||    \  |  | |  |  |        |  |  |  ||    _]|    |_
+|___, ||     ||  :  ||     | |  | |  |  |        |  `  '  ||  [__ |  O   |
+|     ||     ||     ||  .  | |  | |  |  |         \      / |     ||      |
+|____/  \___/  \__,_||__|\_||____||__|__|          \_/\_/  |_____||_____/</div>
 
     <div class="background-grid"></div>
 
@@ -316,11 +316,24 @@
         let passwordMode = false;
         let gameActive = false;
 
-        const personalData = { name: { ja: "八百井 陽平", en: "Yohei Yaoi" }, profile: { ja: "私は、コードとアートの境界を探求する観察者です。未知のシステムを解析し、次元間のデータを収集しています。特に、複雑なロジックと奇妙なインターフェースの構築に情熱を注いでいます。", en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces." }, timeline: { ja: ["/* 2006年6月7日: 八百井 陽平、この次元に誕生 */", "// 事象: 存在の歪曲事象発生 (初期記録)", "// 行動: 情報ストリーム収集開始 (フェーズ1)", "// 警告: 時空間フロー異常検出 (ステータス: 継続中)", "/* ログ: 時空転移観測 (日付: 20XX年第3四半期) */", "// プロジェクト: 自己参照マトリクス構築 (ステータス: 87%完了)", "// 注記: 外部存在による監視プロセス (優先度: 高)", "/* 現在のステータス: システム安定性低下、侵入の可能性あり */"], en: ["/* 2006 June 7: Yohei Yaoi was born into this dimension */", "// EVENT: EXISTENCE_MANIFESTATION_OCCURRED (INITIAL_LOG)", "// ACTION: DATA_STREAM_COLLECTION_INITIATED (PHASE_1)", "// ALERT: ANOMALY_DETECTED_IN_TIME_FLOW (STATUS: ONGOING)", "/* LOG: TEMPORAL_SHIFT_OBSERVED (DATE: 20XX_Q3) */", "// PROJECT: SELF_REFERENCE_MATRIX_CONSTRUCTION (STATUS: 87% COMPLETE)", "// NOTE: EXTERNAL_ENTITIES_MONITORING_PROCESS (HIGH_PRIORITY)", "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"] }, game: { title: "謎の空間探査ゲーム「クロノス・パス」", link: "https://example.com/your-game" } };
+        const personalData = { name: { ja: "矢追 陽平（ヤオイ ヨウヘイ）", en: "Yohei Yaoi" }, 
+        profile: { ja: "矢追陽平のプロフィール \n あだ名 : ヨウキン（ようきん) \n 年齢 : 大学1年生(19歳) \n 誕生日 : 2006年6月7日(コレを見たからには祝ってネ) \n 趣味 : ゲーム開発, 筋トレ, お絵描き、音ゲー、ランニング、サイクリング、 \n 好きな名言 : 自分を信じない奴に努力する価値はない (by マイトガイ) \n 一言 : みんな仲良くしよう。", 
+                   en: "I am an observer who explores the boundaries between code and art. I analyze unknown systems and collect interdimensional data. I am particularly passionate about building complex logic and peculiar interfaces." }, 
+        timeline: { ja: ["//2006年6月7日 矢追陽平の誕生 \n //2010年4月1日 久我山幼稚園に入園 \n //2013年4月1日 慶應義塾横浜初等部に入学 \n //2019年4月1日 慶應義塾湘南藤沢中等部に入学 \n //2022年4月1日 慶應義塾湘南藤沢高等部に入学 \n //2025年4月1日 慶應義塾大学環境情報学部に進学 \n //2025年7月24日2:25 このウェブサイトのこの行を書いている。"], 
+                    en: ["/* 2006 June 7: Yohei Yaoi was born into this dimension */", "// EVENT: EXISTENCE_MANIFESTATION_OCCURRED (INITIAL_LOG)", "// ACTION: DATA_STREAM_COLLECTION_INITIATED (PHASE_1)", "// ALERT: ANOMALY_DETECTED_IN_TIME_FLOW (STATUS: ONGOING)", "/* LOG: TEMPORAL_SHIFT_OBSERVED (DATE: 20XX_Q3) */", "// PROJECT: SELF_REFERENCE_MATRIX_CONSTRUCTION (STATUS: 87% COMPLETE)", "// NOTE: EXTERNAL_ENTITIES_MONITORING_PROCESS (HIGH_PRIORITY)", "/* CURRENT_STATUS: SYSTEM_STABLE_BUT_COMPROMISED */"] }, 
+        games: [
+            { title: {ja:"スライムスライス", en:"SlimeSlice"}, 
+            link: "https://unityroom.com/games/slimeslice#google_vignette" },
+            { title: {ja:"ぼくのにっき", en:"My Diary"}, 
+            link: "https://unityroom.com/games/bokunonikki" },
+            { title: {ja:"DepthDiary", en:"DepthDiary"}, 
+            link: "https://play.unity.com/ja/games/962dd261-d374-4db9-83cf-7050148df431/depth-diary" },
+            
+        ] };
         
         const commands = {
             'help': { ja: `<span class="comment">// 利用可能なコマンド:</span>\n<span class="highlight">help</span>     - コマンドリストを表示\n<span class="highlight">name</span>     - ユーザー名を表示\n<span class="highlight">profile</span>  - 自己紹介を表示\n<span class="highlight">timeline</span> - 年表を表示\n<span class="highlight">game</span>     - 作成ゲームの情報を表示\n<span class="highlight">play</span>     - ミニゲームをプレイ (操作: スペースキー or クリック)\n<span class="highlight">language</span> - 言語設定を変更\n<span class="highlight">color</span>    - テーマカラーを変更\n<span class="highlight">clear</span>    - 画面をクリア\n<span class="highlight">exit</span>     - セッションを終了`, en: `<span class="comment">// Available Commands:</span>\n<span class="highlight">help</span>     - Display command list\n<span class="highlight">name</span>     - Display user name\n<span class="highlight">profile</span>  - Show personal profile\n<span class="highlight">timeline</span> - Show timeline\n<span class="highlight">game</span>     - Show info about created games\n<span class="highlight">play</span>     - Play a mini-game (Controls: Spacebar or Click)\n<span class="highlight">language</span> - Change language setting\n<span class="highlight">color</span>    - Change theme color\n<span class="highlight">clear</span>    - Clear the screen\n<span class="highlight">exit</span>     - Close the session` },
-            'name': { ja: `<span class="comment">// 名前データを取得中...</span>\n<span class="glitch">データベース0x01にアクセス中...</span>\n名前フィールド: '${personalData.name.ja}'\n<span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>`, en: `<span class="comment">// Retrieving NAME data...</span>\n<span class="glitch">Accessing_Database_0x01...</span>\nNAME_FIELD: '${personalData.name.en}'\n<span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>` },
+            'name': { ja: `<span class="comment">// 名前データを取得中...</span>\n<span class="glitch">データベース0x01にアクセス中...</span>\n名前: '${personalData.name.ja}'\n<span class="error-line">エラー: データ整合性チェック失敗 (コード: 0xDEADBEEF)</span>`, en: `<span class="comment">// Retrieving NAME data...</span>\n<span class="glitch">Accessing_Database_0x01...</span>\nNAME: '${personalData.name.en}'\n<span class="error-line">ERROR: DATA_INTEGRITY_CHECK_FAILED (CODE: 0xDEADBEEF)</span>` },
             'profile': { ja: `<span class="comment">// プロファイル情報を取得中...</span>\n<span class="glitch">個人データキャッシュをスキャン中...</span>\n${personalData.profile.ja}\n<span class="error-line">エラー: 認証レベル不足 (CODE: 401)</span>`, en: `<span class="comment">// Retrieving PROFILE data...</span>\n<span class="glitch">Scanning_Personal_Data_Cache...</span>\n${personalData.profile.en}\n<span class="error-line">ERROR: INSUFFICIENT_AUTHENTICATION_LEVEL (CODE: 401)</span>` },
             'timeline': () => {
                 passwordMode = true;
@@ -330,7 +343,29 @@
                 };
                 return prompts[currentLanguage];
             },
-            'game': { ja: `<span class="comment">// ゲーム情報を取得中...</span>\n<span class="glitch">メタデータを解析中...</span>\nタイトル: '${personalData.game.title}'\nリンク: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>\n<span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>`, en: `<span class="comment">// Retrieving GAME data...</span>\n<span class="glitch">Parsing_Metadata...</span>\nTITLE: '${personalData.game.title}'\nLINK: <a href="${personalData.game.link}" target="_blank" style="color:#00ffff;">${personalData.game.link}</a>\n<span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>` },
+            'game': () => {
+                const header = {
+                    ja: `<span class="comment">// ゲーム情報を取得中...</span>\n<span class="glitch">メタデータを解析中...</span>`,
+                    en: `<span class="comment">// Retrieving GAME data...</span>\n<span class="glitch">Parsing_Metadata...</span>`
+                };
+
+                let gameList = '';
+                personalData.games.forEach((game, index) => {
+                    const title = game.title[currentLanguage] || game.title.en;
+                    const link = game.link;
+                    if (index > 0) {
+                        gameList += `\n<span class="comment">--------------------</span>`;
+                    }
+                    gameList += `\nタイトル: '${title}'\nリンク: <a href="${link}" target="_blank" style="color:#00ffff;">${link}</a>`;
+                });
+
+                const footer = {
+                    ja: `\n\n<span class="error-line">警告: 外部リンクへの接続 (推奨度: 低)</span>`,
+                    en: `\n\n<span class="error-line">WARNING: CONNECTION_TO_EXTERNAL_LINK (RECOMMENDATION: LOW)</span>`
+                };
+
+                return header[currentLanguage] + gameList + footer[currentLanguage];
+            },
             'language': { ja: `使用したい言語を次のコマンドから選んで入力してください: <span class="highlight">ja</span> (日本語), <span class="highlight">en</span> (English)`, en: `Please choose your desired language from the following commands: <span class="highlight">ja</span> (Japanese), <span class="highlight">en</span> (English)` },
             'clear': () => { outputContainer.innerHTML = ''; },
             'exit': { ja: `<span class="error-line">システムシャットダウンを開始します...</span>`, en: `<span class="error-line">SYSTEM SHUTDOWN INITIATED...</span>` },
