@@ -226,23 +226,19 @@
             animation: rainbow-flow 4s linear infinite;
         }
 
-        /* --- 修正箇所 --- */
-        /* move-across アニメーションを汎用セレクターから削除 */
         body.theme-rainbow #ascii-art-title,
         body.theme-rainbow .prompt,
         body.theme-rainbow .typed-text,
         body.theme-rainbow #output-container *,
-        body.theme-rainbow .cursor,
         body.theme-rainbow .game-container * {
             background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent !important;
-            animation: rainbow-flow 4s linear infinite; /* 虹色スクロールのアニメーションのみ適用 */
+            animation: rainbow-flow 4s linear infinite;
             background-size: 200% 100%;
         }
         
-        /* 顔文字には虹色スクロールと左右の動き、両方のアニメーションを適用 */
         body.theme-rainbow #moving-face {
            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
            -webkit-background-clip: text;
@@ -274,7 +270,7 @@
             .terminal-container { 
                 width: 100%; 
                 max-width: 100%; 
-                height: 100%;
+                height: 65vh;
                 padding: 10px; 
             }
         }
@@ -282,13 +278,13 @@
 </head>
 <body>
     <div id="ascii-art-title"> 
- __ __   ___   __ __  __  _  ____  ____       __    __    ___  ____  
-|  |  | /   \ |  |  ||  |/ ]|    ||    \      |  |__|  |  /  _]|    \ 
-|  |  ||     ||  |  ||  ' /  |  | |  _  |     |  |  |  | /  [_ |  o  )
-|  ~  ||  O  ||  |  ||    \  |  | |  |  |     |  |  |  | |    _]|    |
-|___, ||     ||  :  ||     | |  | |  |  |     |  `  '  ||  [_ |  O  |
-|     ||     ||     ||  .  | |  | |  |  |      \      / |    ||     |
-|____/  \___/  \__,_||__|\_||____||__|__|       \_/\_/  |_____||_____|</div>
+ __ __   ___   __ __  __  _  ____  ____         __    __    ___  ____  
+|  |  | /   \ |  |  ||  |/ ]|    ||    \        |  |__|  |  /  _]|    \ 
+|  |  ||     ||  |  ||  ' /  |  | |  _  |        |  |  |  | /  [_ |  o  )
+|  ~  ||  O  ||  |  ||    \  |  | |  |  |        |  |  |  | |    _]|    |
+|___, ||     ||  :  ||     | |  | |  |  |        |  `  '  ||  [_ |  O  |
+|     ||     ||     ||  .  | |  | |  |  |         \      / |    ||     |
+|____/  \___/  \__,_||__|\_||____||__|__|          \_/\_/  |_____||_____|</div>
 
     <div class="background-grid"></div>
 
@@ -483,6 +479,8 @@
             player.className = 'player';
             player.dataset.lane = 'left';
             player.style.left = '25%';
+            // ★★★ 修正箇所 ★★★ プレイヤーをレーンの中央に配置
+            player.style.transform = 'translateX(-50%)';
             gameContainer.appendChild(player);
 
             score = 0;
@@ -503,6 +501,7 @@
             if (!gameActive) return;
             if (e.type === 'click' || (e.type === 'keydown' && e.code === 'Space')) {
                 player.dataset.lane = (player.dataset.lane === 'left') ? 'right' : 'left';
+                // ★★★ 修正箇所 ★★★ プレイヤーの移動先を指定
                 player.style.left = (player.dataset.lane === 'left') ? '25%' : '75%';
             }
         }
@@ -513,6 +512,8 @@
             enemy.className = 'enemy';
             const lane = Math.random() < 0.5 ? 'left' : 'right';
             enemy.style.left = lane === 'left' ? '25%' : '75%';
+            // ★★★ 修正箇所 ★★★ 敵をレーンの中央に配置
+            enemy.style.transform = 'translateX(-50%)';
             enemy.dataset.lane = lane;
             
             gameContainer.appendChild(enemy);
@@ -560,4 +561,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
